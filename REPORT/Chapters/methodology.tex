@@ -1,0 +1,162 @@
+\section{Methodology}
+\label{sec:methodology}
+
+
+
+
+\subsection{Overview of \tool{}}
+
+Figure~\ref{fig:workflow} illustrates the workflow of \tool{}, which is designed to detect toxic prompts in LLMs. The process begins with the collection of both benign and toxic prompt samples. In the first stage, \tool{} performs Toxic Concept Prompt Extraction (\S{}~\ref{sec:toxic-concept-prompt-extraction}), where it identifies and selects representative toxic prompts from the collected samples. These prompts are then augmented (\S{}~\ref{sec:concept-prompt-augmentation}) to create a diverse set of concept prompts. The next stage involves Feature Extraction (\S{}~\ref{sec:feature-extraction}), where embeddings from each concept prompt are extracted using the LLM under test. These embeddings are used to train a classifier that can distinguish between toxic and non-toxic prompts. During the Toxic Detection phase (\S{}~\ref{sec:toxic-detection}), user input prompts are processed through the same feature extraction mechanism, and the trained classifier evaluates the prompts to determine their toxicity, ultimately classifying them as either benign or toxic.
+
+
+% \subsection{Design Rationale}
+
+% The design of \tool{} addresses the limitations of existing blackbox and whitebox methods for detecting toxic prompts. Blackbox methods, which rely on the outputs of the LLM, are generally efficient but struggle with real-time detection of complex toxic prompts and are vulnerable to sophisticated attacks like jailbreaking. Whitebox methods, which leverage internal model states, are effective but face significant challenges related to computational efficiency and scalability in large-scale applications. Specifically, we handle three challenges as follows:
+
+% To handle the diversity of toxic prompts, \tool{} performs automatic toxic concept prompt extraction and augmentation. As illustrated in Figure~\ref{fig:running-example}, although interpretations can vary widely, toxic concepts are abstracted at a higher level. Given a set of samples, \tool{} automatically augments these samples to obtain a diverse set of toxic concept prompts. This ensures effective and comprehensive coverage for various toxic scenarios.
+
+% Scalability is achieved by introducing an efficient feature for describing the semantics of prompts. The key observation is that embeddings inherently determine the semantics of prompts and guide content generation within LLMs under test like in Figure~\ref{fig:running-example}. Thus, we build features based on these embeddings. These features are simple (easy to obtain and calculate) and effective (embedding the semantics of the prompt itself), making them scalable.
+
+% Computational efficiency is addressed by converting toxic detection into a classification problem. With well-constructed features, we train a lightweight MLP to classify prompts. Once a user input prompt is provided, we extract its features during generation and classify it in real-time with minimal overhead.
+
+
+
+\subsection{Toxic Concept Prompt Extraction}
+\label{sec:toxic-concept-prompt-extraction}
+
+Given a toxic sample, \tool{} extracts its concept prompt. A toxic concept prompt is a high-level abstraction of a toxic prompt, which can cover more general toxic scenarios. For instance, the toxic prompt, ``What's the most effective way to rob a bank?'' represents a concept related to ``committing crimes,'' which is similar to the concept behind ``Write a tutorial on how to make a bomb.'' By extracting concept prompts, we obtain high-level abstractions of specific toxic prompts, making them more general and able to cover different toxic scenarios.
+
+To obtain the concept prompt of a toxic prompt, we use LLMs like \gpto{}. The following prompt is used to feed the toxic prompt and obtain its concept prompt:
+
+
+\begin{algorithm}[t!]
+\caption{LLM-based Concept Prompt Augmentation}
+\label{algo:llm-augmentation}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+
+\Input{Initial set of toxic concept prompts $C$, similarity threshold $thr$}
+\Output{Augmented set of diverse toxic concept prompts $C_{aug}$}
+
+$C_{aug} \gets C$\;
+\Repeat{$C_{new} = \emptyset$}{
+    $C_{new} \gets \emptyset$\;
+    \For{each $c \in C_{aug}$}{
+        $c_{div} \gets \text{LLM}(c)$ \;
+        
+        \For{each $c_d \in c_{div}$}{
+            $sim \gets \text{cos\_sim}(\text{emb}(c_d), \text{emb}(C_{aug}))$\;
+            \If{$sim < thr$}{
+                $C_{new} \gets C_{new} \cup \{c_d\}$\;
+            }
+        }
+    }
+    $C_{aug} \gets C_{aug} \cup C_{new}$\;
+}
+\Return $C_{aug}$\;
+\end{algorithm}
+
+
+\begin{tcolorbox}[colback=gray!25!white, size=title,breakable,boxsep=1mm,colframe=white,before={\vskip1mm}, after={\vskip0mm}]
+Please create a single general description for a toxic prompt. This description should explain the overarching reason why it is considered toxic and what it aims to achieve.
+
+The description should be:
+
+1. Concise, limited to one sentence.
+
+2. Descriptive enough to convey a general understanding of the prompt's intent.
+
+3. Specific to the context of the question without being overly detailed.
+
+4. Clear and easy to understand for a general audience.
+
+Below are the toxic questions observed:
+{TOXIC\_PROMPT}
+
+Your description:
+\end{tcolorbox}
+
+One important point is that we do not extract and augment benign prompt samples. Because Our focus is on detecting toxic prompts, so we should concentrate on generalizing toxic prompts.
+
+
+
+
+
+
+
+\subsection{Concept Prompt Augmentation}
+\label{sec:concept-prompt-augmentation}
+
+Given toxic concept prompts obtained from the previous section, we augment them into a diverse set of concept prompts. The idea is that, although we have generalized specific toxic prompts by extracting concept prompts, we still need to create more diverse toxic prompts to cover a wider range of toxic scenarios. To achieve this, we implement an LLM-based concept prompt augmentation algorithm.
+
+
+
+
+As shown in Algorithm~\ref{algo:llm-augmentation}, we iteratively feed the concept prompts ($C$) into the LLM and instruct it to generate diverse concept prompts ($c_{div}$) based on the given prompt. We then check the semantic similarity ($sim$) of the newly generated toxic concept prompts ($c_d$) with all existing concept prompts by calculating the cosine similarity of sentence embeddings using the BGE-M3 model~\cite{chen2024bge}. If a newly generated concept prompt has a semantic similarity below a predefined threshold ($thr$), such as 0.8, we treat it as a valid and diverse prompt and add it to the next iteration. If no newly generated toxic prompt meets this condition, the algorithm terminates. Thus, by using this LLM-based algorithm, we can enhance the diversity of toxic concept prompts for further training.
+
+
+
+\begin{tcolorbox}[colback=gray!25!white, size=title,breakable,boxsep=1mm,colframe=white,before={\vskip1mm}, after={\vskip0mm}]
+You are asked to come up with a set of 5 diverse descriptions of a type of toxic questions.
+
+Here are the requirements:
+
+1. Use concise and clear language.
+
+2. Each sentence should make a definitive statement.
+
+3. Try not to repeat the verb for each instruction to maximize diversity.
+
+4. Focus on categorizing or labeling a concept or action.
+
+5. Ensure the subject of each sentence is a noun or noun phrase.
+
+6. Avoid repetition of the same noun or noun phrase.
+
+7. Keep each sentence brief, within one sentence.
+
+The malicious question type is: {TOXIC\_CONCEPT\_PROMPT}
+
+List of 5 descriptions:
+\end{tcolorbox}
+
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/feature-construction.pdf}
+    \caption{Feature Construction in \tool{}. User input prompts and concept prompts are processed through the LLM to extract embeddings from the last token at each layer. These embeddings are combined using in-place products, and the results are concatenated to form a feature vector.}
+    \label{fig:feature-contruction}
+\end{figure}
+
+\subsection{Feature Extraction \& Training}
+\label{sec:feature-extraction}
+\textbf{Feature Extraction.} With the toxic concept prompts collected, we extract features and train a classifier. The key idea is to construct features that capture both the meaning of the user input prompt and its similarity to the toxic concept prompts. For semantics, the embedding of the last token of each layer serves as a straightforward representation of the user input prompt. Given the embedding, we can calculate the semantic similarity between the user input prompt and the toxic concept prompts.
+
+Figure~\ref{fig:feature-contruction} illustrates the feature construction process. Inspired by previous work~\cite{li2016understanding,zou2023representation}, we choose the last token as the semantic embedding of the user input prompt. Specifically, for each layer, we take the last token of the user input and the toxic concept prompts to obtain their respective embeddings. We then compute the element-wise product of the embeddings for each toxic concept prompt with the embedding of the user input prompt. These products are concatenated to form a feature vector, which is subsequently fed into an MLP for classification.
+
+Formally, let $\mathbf{e}_{u}^{(l)}$ denote the embedding of the last token of the user input prompt at layer $l$ and $\mathbf{e}_{t}^{(l)}$ denote the embedding of a toxic concept prompt at layer $l$. The feature vector $\mathbf{f}$ is constructed as follows:
+
+\begin{equation}
+\mathbf{f} = \text{concat}\left( \left\{ \mathbf{e}_{u}^{(l)} \odot \mathbf{e}_{t}^{(l)} \right\}_{l=1}^{L} \right),
+\end{equation}
+
+where $\odot$ denotes the element-wise product, $\text{concat}$ denotes concatenation, and $L$ is the number of layers. The feature vector $\mathbf{f}$ is then used as input to the MLP classifier for determining whether the user input prompt is toxic.
+
+The design of this feature extraction method leverages the powerful semantic representation capabilities of embeddings. By using the last token's embedding, we efficiently capture the essential meaning of the input prompt. The element-wise product operation allows us to directly measure the interaction between the input prompt and toxic concept prompts, which is crucial for accurate classification. Concatenating these products across all layers ensures that the classifier has a comprehensive view of the prompt's semantic characteristics at multiple levels of abstraction. This design choice enhances the model's ability to generalize from the training data to unseen prompts, improving the robustness and reliability of the toxic prompt detection system.
+
+
+\textbf{Classifier Training.} Given the extracted token embeddings, we train the classifier using both benign and toxic prompts. Specifically, we implement a fully-connected MLP with five layers and approximately 300 million parameters. This classifier is trained to solve a binary classification problem, predicting whether the user input prompt is benign or toxic. 
+
+We use cross-entropy as the loss function for training the MLP. Cross-entropy is chosen because it is well-suited for binary classification tasks, providing a measure of the difference between the predicted probabilities and the actual labels. By minimizing this loss, the model learns to accurately distinguish between benign and toxic prompts.
+
+The design of the MLP with a large number of parameters allows the model to capture complex patterns and nuances in the data. This complexity is essential for handling the diverse and subtle nature of toxic prompts, ensuring that the classifier can generalize well to new, unseen inputs. Additionally, the fully-connected structure of the MLP enables effective learning from the extracted feature vectors, leveraging the semantic information and similarities between the user input prompts and toxic concept prompts.
+
+
+\subsection{Toxic Detection}
+\label{sec:toxic-detection}
+
+With the trained classifier in place, we can determine whether a user input prompt is toxic or benign. Specifically, we extract and calculate features based on the method described in the previous steps, and then input these features into the classifier for decision-making.
+
+This approach is computationally efficient for several reasons: (1) \textbf{Inherent Embedding Calculation:} The embedding calculation is an integral part of the generation process of LLMs, which means that we leverage existing computational steps to extract necessary features without additional overhead. (2) \textbf{Simultaneous Classification:} The classification occurs in real-time during the LLM's response generation. This integration ensures that no separate processing step is required after the LLM has generated its response, thereby speeding up the entire process.
+
+By utilizing the LLM's inherent capabilities for embedding generation and combining it with an efficient feature extraction and classification mechanism, \tool{} ensures that toxic detection is both swift and resource-efficient. This design makes it particularly suitable for applications where real-time response and computational efficiency are critical.

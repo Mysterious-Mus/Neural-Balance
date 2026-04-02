@@ -1,0 +1,12 @@
+ui-tars
+qwen-vl-utils
+termcolor
+pydantic
+Pillow
+openai
+google-genai
+playwright
+browserbase
+rich
+pytest
+click

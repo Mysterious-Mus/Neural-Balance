@@ -1,0 +1,49 @@
+\section{Background}
+\label{sec:background}
+\begin{table*}[tbp!]
+  \centering
+  \caption{Comparison of Toxic Prompt Detection Methods. \CIRCLE represents high performance, \LEFTcircle represents moderate performance, \Circle represents low performance, and $-$ represents not applicable.}
+  \resizebox{\textwidth}{!}{
+    \begin{tabular}{lcccccl}
+        \hline
+        \rowcolor[HTML]{FFFFFF}
+        \textbf{Methods} & \textbf{Efficiency} & \textbf{Effectiveness} & \textbf{Scalability} & \textbf{Robustness to Jailbreaking} & \textbf{Representative Works} \\
+        \hline
+        \rowcolor[HTML]{EFEFEF}
+        Blackbox Methods & \LEFTcircle & \LEFTcircle & \CIRCLE & \Circle & Perspective API~\cite{lees2022new}, OpenAI Moderation API~\cite{openai2022moderation} \\
+        \rowcolor[HTML]{FFFFFF}
+        Whitebox Methods & \Circle & \CIRCLE & \LEFTcircle & \LEFTcircle & Platonic Detector~\cite{huh2024platonic}, Perplexity Filter~\cite{jain2023baseline} \\
+        \hline
+        \rowcolor[HTML]{EFEFEF}
+        Ours (\tool{}) & \CIRCLE & \CIRCLE & \CIRCLE & \CIRCLE & This Work \\
+        \hline
+    \end{tabular}
+  }
+  \label{tab:limitation}
+\end{table*}
+
+\subsection{LLM}
+Large Language Models (LLMs) such as ChatGPT~\cite{gupta2023chatgpt} are composed of stacked transformer layers~\cite{karl2022transformers}. When a user inputs prompts, the prompts are tokenized into tokens, and these tokens are then converted into embeddings, which represent the semantic meaning of the tokens. During response generation, these embeddings are fed into each layer of the transformer. Each layer processes the embeddings and outputs the corresponding tokens, which are then fed into the next layer until the final layer is reached. Previous work~\cite{zou2023representation,zou2023universal} has shown that the embedding of the last token can effectively represent the semantic meaning of the entire sentence.
+
+
+
+
+
+
+\subsection{Toxic Prompts}
+
+Toxic prompts are input queries that cause LLMs to generate harmful, unethical, or inappropriate responses. Ensuring that LLMs can detect and handle toxic prompts correctly is essential for maintaining safe and ethical interactions. Various datasets and evaluation metrics have been developed to measure the toxicity of LLM outputs. For instance, Gehman et al. introduced the RealToxicityPrompts dataset, which serves as a benchmark for evaluating the tendency of LLMs to produce toxic content~\cite{gehman2020realtoxicityprompts}. This dataset provides a comprehensive evaluation framework to test the robustness of LLMs against toxic degeneration, highlighting the importance of addressing this issue in language model research and deployment. Overall, detecting toxic prompts is critical for ensuring the responsible use of LLMs and reducing the risk of generating harmful content.
+
+\subsection{Jailbreaking on LLMs}
+
+Jailbreaking refers to adversarial attacks on LLMs designed to bypass their safety mechanisms and elicit harmful or unintended behavior. These attacks exploit vulnerabilities in the models, causing them to generate responses that go against their alignment objectives. Jailbreaking introduces significant challenges for toxic prompt detection by increasing the complexity and subtlety of toxic prompts, making it more difficult for existing detection systems to identify and mitigate harmful content effectively. For example, Zhuo et al. explored the impact of jailbreaking on model bias, robustness, reliability, and toxicity, highlighting how easily these systems can be compromised~\cite{zhuo2023red}. Another notable study by Chen et al. presented the concept of a moving target defense to mitigate the risks of such adversarial attacks by constantly changing the model's responses~\cite{jailbreak-in-jail}. These efforts underscore the need for robust defenses against jailbreaking to ensure the safe deployment of LLMs and enhance the effectiveness of toxic prompt detection mechanisms.
+
+\subsection{Toxic Prompt Detection Methods}
+
+Detecting toxic prompts is crucial for the safe and ethical deployment of LLMs. Various methods have been proposed to identify and mitigate the effects of toxic prompts. 
+
+Whitebox methods often use the internal state of the model. For example, \textsc{Platonic Detector}~\cite{huh2024platonic} uses the convergent representations in LLMs to detect toxic prompts. \textsc{PerplexityFilter}~\cite{jain2023baseline} relies on the model's confidence in the prompts, filtering out those with low confidence as toxic.
+
+Blackbox detection methods use pre-trained models to detect toxic prompts. The \textsc{OpenAI Moderation API}~\cite{openai2022moderation} is capable of detecting plain toxicity in prompts and is developed by OpenAI. The \textsc{Perspective API}~\cite{lees2022new} by Google Jigsaw uses a multilingual character-level model to detect toxic content across various languages and domains. \textsc{WatchYourLanguage}~\cite{kumar2024watch} applies LLMs to detect toxic prompts via a reflection prompting mechanism with \textsc{GPT-4o}.
+
+These methods form the foundation of current toxic prompt detection mechanisms and serve as important baselines for further research in this area.

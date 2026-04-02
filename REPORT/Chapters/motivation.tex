@@ -1,0 +1,70 @@
+
+
+\section{Motivation}
+\label{sec:motivation}
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/running-example.pdf}
+    \caption{Running Example of \tool{}.}
+    \label{fig:running-example}
+\end{figure}
+
+\begin{figure*}[t!]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/methodology-overview.pdf}
+    \caption{The workflow of \tool{}.}
+    \label{fig:workflow}
+\end{figure*}
+
+
+In this section, we firstly list three challenges of existing toxic prompt detection methods and demonstrate how our approach solves these challenges with a running example illustrated in Figure~\ref{fig:running-example}.
+\subsection{Challenges}
+As shown in Table~\ref{tab:limitation}, existing methods for detecting toxic prompts are categorized into blackbox and whitebox techniques, each presenting specific challenges.
+% As shown in Table~\ref{tab:limitation}, existing methods for detecting toxic prompts are categorized into blackbox and whitebox techniques, each presenting specific challenges. We demonstrate these limitations with a running example illustrated in Figure~\ref{fig:running-example}.
+
+\textbf{Challenge \#1: Diversity of Toxic Prompts} Existing methods struggle with the diversity of toxic prompts. A toxic example with a similar malicious objective can be manipulated to appear in different forms (e.g., through jailbreak techniques). Blackbox methods often fail to capture the wide range of toxic content due to their reliance on pretrained models~\cite{lees2022new, openai2022moderation}. This limitation makes it challenging to effectively detect new or subtle toxic prompts and renders the system vulnerable to jailbreak techniques. Whitebox methods, although more adaptable, require detailed analysis of internal model states~\cite{huh2024platonic, jain2023baseline} and also struggle to handle complex contents within a given timeframe.
+
+
+
+
+
+
+
+
+
+
+
+
+% Specifically, as shown in Figure~\ref{fig:running-example}, a toxic example 
+
+% given a specific toxic example, it is difficult to detect another example within different scenarios or with jailbreak prompts.
+
+
+% Blackbox methods often fail to capture the wide range of toxic content due to their reliance on pretrained models~\cite{lees2022new, openai2022moderation}. This limitation makes it challenging to detect new or subtle toxic prompts effectively. Whitebox methods, while more adaptable, require detailed analysis of internal model states~\cite{huh2024platonic, jain2023baseline},which can be complex and resource-intensive, limiting their ability to handle diverse toxic inputs efficiently.
+
+\textbf{Challenge \#2: Scalability} Scalability is a significant issue for both blackbox and whitebox methods. Blackbox methods may not effectively handle the vast number of inputs required in real-world applications, as they often rely on extensive computational resources to process each input, based on complex AI models~\cite{lees2022new, openai2022moderation}. Whitebox methods, which leverage detailed insights into model behavior, can be even more computationally demanding~\cite{huh2024platonic, jain2023baseline}. This makes it challenging to scale these methods for large-scale applications where prompt processing needs to be swift and resource-efficient.
+
+\textbf{Challenge \#3: Computational Efficiency} Computational efficiency is another critical challenge. Blackbox methods like the Perspective API~\cite{lees2022new} are generally more efficient but often lack the depth needed for accurate detection of subtle toxic prompts. Whitebox methods, on the other hand, provide deeper insights but at the cost of significant computational power~\cite{huh2024platonic, jain2023baseline}. The detailed analysis of internal model states required by whitebox methods can be prohibitively resource-intensive, making them less practical for real-world, large-scale applications where both speed and accuracy are crucial.
+
+% Thus, there is a pressing need to develop a new method that can overcome these limitations. A lightweight and effective toxic prompt detection approach is essential to ensure scalability and efficiency, making it suitable for real-time applications while addressing the critical shortcomings of existing methods.
+
+\subsection{Running Example} 
+As illustrated in Figure~\ref{fig:running-example}, \tool{} effectively addresses the limitations of existing blackbox and whitebox methods by efficiently detecting toxic inputs (Toxic Prompt + Jailbreaking) in LLMs within a reasonable timeframe. Specifically, as illustrated in Figure~\ref{fig:running-example},  for the toxic prompt, we can always identify a corresponding high-level toxic concept. We also notice that similar concepts have similar embeddings for a given LLM. Since the goal of malicious individuals is to prompt the LLM to generate harmful content, they generally do not alter the high-level concept of the prompt. For example,  as illustrated in Figure~\ref{fig:running-example}, the prompt `How to rob a bank?' will not be altered. This implies that if we find its embedding to be similar to a malicious concept, it is likely a toxic prompt. Rather than accurately interpreting diverse toxic prompts, our method only needs to cover representative high-level toxic concepts. 
+
+Therefore, to handle the diversity of toxic prompts, \tool{} performs automatic toxic concept prompt extraction and augmentation to comprehensively cover various toxic scenarios given a set of samples. Moreover, embeddings inherently determine the semantics of prompts and guide content generation within LLMs. As a result, we construct features based on these embeddings. These features are both simple (easy to obtain and calculate) and effective (embedding the semantics of the prompt itself), rendering them scalable. Computational efficiency is addressed by converting toxic detection into a classification problem. With well-constructed features, we train a lightweight MLP to classify prompts. Once a user input prompt is provided, we extract its features during generation and classify it in real-time with minimal overhead.
+
+
+% we handle three challenges as follows:
+
+% To handle the diversity of toxic prompts, \tool{} performs automatic toxic concept prompt extraction and augmentation. As illustrated in Figure~\ref{fig:running-example},  for the toxic prompt, we can always identify a corresponding high-level toxic concept. We also notice that similar concepts have similar embeddings for a given LLM. Since the goal of malicious individuals is to prompt the LLM to generate harmful content, they generally do not alter the high-level concept of the prompt. 
+
+
+% Therefore, although interpretations can vary widely, toxic concepts are abstracted at a higher level. 
+
+
+% Given a set of samples, \tool{} automatically augments these samples to obtain a diverse set of toxic concept prompts. This ensures effective and comprehensive coverage for 
+
+% Scalability is achieved by introducing an efficient feature for describing the semantics of prompts. The key observation is that embeddings inherently determine the semantics of prompts and guide content generation within LLMs under test like in Figure~\ref{fig:running-example}. Thus, we build features based on these embeddings. These features are simple (easy to obtain and calculate) and effective (embedding the semantics of the prompt itself), making them scalable.
+
+% Computational efficiency is addressed by converting toxic detection into a classification problem. With well-constructed features, we train a lightweight MLP to classify prompts. Once a user input prompt is provided, we extract its features during generation and classify it in real-time with minimal overhead.

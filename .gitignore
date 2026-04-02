@@ -1,2 +1,58 @@
 .data/
 .vector_cache/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.synctex.gz(busy)
+*.synctex(busy)
+*.toc
+*.auxlock
+*.ent
+*.md5
+
+# Index / glossaries (makeindex, glossaries)
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+
+# LaTeX temporary backups
+*.bak
+*.backup
+*~
+*.swp
+*.swo
+
+# Package-specific / tool caches
+_minted*/
+*.pyg
+latexmkrc
+
+# Common output directories
+_build/
+build/
+tmp/
+
+reference/
+
+main.pdf
