@@ -1,0 +1,2 @@
+# MNIST fully-connected experiments.
+

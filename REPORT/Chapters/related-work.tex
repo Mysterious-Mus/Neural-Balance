@@ -1,19 +1,13 @@
+% Related work.
+
 \section{Related Work}
-\label{sec:related}
-The field of toxic prompt detection and mitigation for LLMs has seen significant advancements, driven by the need to enhance the robustness and safety of these models. This section provides an overview of key works related to toxic prompt detection, jailbreak attacks and toxic prompt detection methods.
+\label{sec:related-work}
 
-\subsection{Toxic Prompts}
-Toxic prompts are input queries that cause LLMs to generate harmful, unethical, or inappropriate responses. Ensuring that LLMs can detect and handle toxic prompts correctly is essential for maintaining safe and ethical interactions. Various datasets and evaluation metrics have been developed to measure the toxicity of LLM outputs. For instance, Gehman et al.~\cite{gehman2020realtoxicityprompts} introduced the RealToxicityPrompts dataset, which serves as a benchmark for evaluating the tendency of LLMs to produce toxic content. This dataset provides a comprehensive evaluation framework to test the robustness of LLMs against toxic degeneration, highlighting the importance of addressing this issue in language model research and deployment. Detecting toxic prompts is crucial for ensuring the responsible use of LLMs and reducing the risk of generating harmful content.
+This section situates the compared regularization approaches within the broader literature. At minimum, it should cover:
+\begin{itemize}
+  \item classical regularization (weight decay, dropout),
+  \item implicit regularization effects of optimization,
+  \item re-parameterization and scale-invariance phenomena in deep nets,
+  \item synaptic neural balance and closely related balancing or rescaling methods \citep{alexos2025synapticbalance}.
+\end{itemize}
 
-\subsection{Jailbreaking on LLMs}
-Several studies have demonstrated the vulnerability of LLMs to jailbreak attacks, which, when combined with toxic prompts, can generate unethical and prohibited content. Liu et al.~\cite{liu2023jailbreaking} conducted an empirical study on jailbreaking to gauge its harmfulness over \textsc{ChatGPT}. MASTERKEY~\cite{Deng_2024} proposes an automated jailbreaking method to craft jailbreak prompts for \textsc{ChatGPT}~\cite{gupta2023chatgpt} and \textsc{Bard}~\cite{aydin2023google}. Wallace et al.~\cite{wallace2019universal} introduced universal adversarial triggers, which are input-agnostic sequences that cause models to produce specific, often harmful, outputs. Similarly, Zhuo et al.~\cite{zhuo2023red} explored the impact of jailbreaking on model bias, robustness, reliability, and toxicity, highlighting how easily these systems can be compromised. These works underscore the importance of developing robust defense mechanisms against such attacks. Our work with \tool{} aims to address these vulnerabilities by detecting and mitigating toxic prompts before they can exploit these weaknesses.
-
-
-\subsection{Toxic Prompt Detection Methods}
-Detecting toxic prompts is crucial for the safe and ethical deployment of LLMs. Various methods have been proposed to identify and mitigate the effects of toxic prompts.
-
-\textbf{Whitebox Methods:} These methods leverage the internal state of the model to detect toxic content. For instance, \textsc{PlatonicDetector}~\cite{huh2024platonic} utilizes the convergent representations in LLMs to identify toxic prompts, offering insights into the underlying dynamics of language processing. \textsc{PerplexityFilter}~\cite{jain2023baseline}, on the other hand, assesses the model's confidence in its responses, filtering out prompts that elicit low-confidence responses as potentially toxic. This approach is particularly effective in isolating subtle or cleverly disguised toxic content that may not trigger traditional detection mechanisms.
-
-\textbf{Blackbox Methods:} These methods rely on pre-trained models without requiring access to their internal states. The \textsc{OpenAI Moderation API}~\cite{openai2022moderation}, for example, is designed to identify and filter out plain toxicity in user inputs. The \textsc{Perspective API}~\cite{lees2022new} by Google Jigsaw extends this capability with a multilingual character-level model that detects toxic content across different languages and cultural contexts. Additionally, \textsc{WatchYourLanguage}~\cite{kumar2024watch} employs LLMs to detect toxic prompts through a reflection prompting mechanism with \textsc{GPT-4o}.
-
-These methods form the foundation of current toxic prompt detection mechanisms. Our approach with \tool{} builds on these existing methods by integrating both whitebox and blackbox approaches, aiming to enhance detection accuracy and robustness. By leveraging LLM embeddings and an MLP classifier, \tool{} offers a scalable and efficient solution suitable for real-time applications.

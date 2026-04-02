@@ -1,3 +1,4 @@
+scikit-learn
 ui-tars
 qwen-vl-utils
 termcolor

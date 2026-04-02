@@ -21,7 +21,7 @@ for model in ['small_fcn', 'medium_fcn', 'large_fcn']:
             # #Clean
             command = []
             command.append('/bin/python3')
-            command.append('MNIST-FCN/MnistTanh.py')
+            command.append('MNIST-FCN/Mnist_tanh.py')
             command.append('--model')
             command.append(model)
             command.append('--gpu')
@@ -45,7 +45,7 @@ for model in ['small_fcn', 'medium_fcn', 'large_fcn']:
             #L1
             command = []
             command.append('/bin/python3')
-            command.append('MNIST-FCN/MnistTanh.py')
+            command.append('MNIST-FCN/Mnist_tanh.py')
             command.append('--model')
             command.append(model)
             command.append('--gpu')
@@ -73,7 +73,7 @@ for model in ['small_fcn', 'medium_fcn', 'large_fcn']:
             #L2
             command = []
             command.append('/bin/python3')
-            command.append('MNIST-FCN/MnistTanh.py')
+            command.append('MNIST-FCN/Mnist_tanh.py')
             command.append('--model')
             command.append(model)
             command.append('--gpu')
