@@ -53,8 +53,6 @@ _build/
 build/
 tmp/
 
-reference/
-
 main.pdf
 
 # Python bytecode / caches
