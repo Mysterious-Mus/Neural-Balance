@@ -1,0 +1,45 @@
+% Controlled-setting comparison: replace \tbd with numbers when available.
+\providecommand{\tbd}{\textemdash}
+
+\begin{table}[t]
+  \centering
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \caption{%
+    Regularization methods under one controlled MNIST + fully connected setting (details in Section~\ref{subsec:reg-mnist-fcn}).
+    Rows vary only the regularization strategy; all other protocol choices match.
+    \emph{Epochs@$\tau$}: epochs until test accuracy first reaches threshold $\tau$ (state $\tau$ in the surrounding text).
+    \emph{Best test}: best test accuracy observed during training.
+    \emph{Gap}: final train accuracy minus final test accuracy (percentage points).
+    \emph{$\sigma_{\mathrm{test}}$}: standard deviation of final test accuracy across random seeds.%
+  }
+  \label{tab:regularization-mnist-fcn}
+  \begin{tabular}{@{}lcccccccc@{}}
+    \toprule
+    Method
+    & Epochs@$\tau$
+    & \begin{tabular}{@{}c@{}}Final\\train acc.\end{tabular}
+    & \begin{tabular}{@{}c@{}}Final\\train loss\end{tabular}
+    & \begin{tabular}{@{}c@{}}Final\\test acc.\end{tabular}
+    & \begin{tabular}{@{}c@{}}Final\\test loss\end{tabular}
+    & \begin{tabular}{@{}c@{}}Best\\test acc.\end{tabular}
+    & Gap
+    & $\sigma_{\mathrm{test}}$ \\
+    \midrule
+    Plain (no explicit reg.)
+    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    $L_2$ weight decay
+    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    $L_1$ penalty
+    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    Dropout
+    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    Early stopping (same budget)
+    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    Synaptic balance ($L_1$)
+    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    Synaptic balance ($L_2$)
+    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    \bottomrule
+  \end{tabular}
+\end{table}

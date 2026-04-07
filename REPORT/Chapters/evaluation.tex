@@ -1,4 +1,5 @@
 % Experimental results.
+\providecommand{\tbd}{\textemdash}
 
 \section{Evaluation}
 \label{sec:evaluation}
@@ -14,6 +15,20 @@ Report the main comparison table(s) here, typically including:
   \item neural balancing (before training and/or interleaved),
   \item combinations (e.g., weight decay + balancing).
 \end{itemize}
+
+\subsection{Regularization comparison on MNIST with a fully connected network}
+\label{subsec:reg-mnist-fcn}
+Table~\ref{tab:regularization-mnist-fcn} compares regularization methods under a single controlled setting: same dataset (MNIST), architecture family (fully connected), optimizer, batch size, training budget, and random seeds; only the regularization strategy changes between rows.
+
+\paragraph{Fixed experimental setting (fill in).}
+Dataset: MNIST.
+Architecture: fully connected network with hidden width $W=\tbd$, number of hidden layers $=\tbd$, activation $=\tbd$, and output dimension $10$.
+Optimization: optimizer $=\tbd$, learning rate $=\tbd$, batch size $=\tbd$, weight decay (if not part of the row being varied) $=\tbd$.
+Training: epochs per run $=\tbd$; early-stopping row (if used) should use the same monitoring rule and maximum budget as other rows unless noted.
+Reproducibility: random seeds $=\tbd$; data splits and augmentation $=\tbd$.
+When reporting results, define the convergence threshold $\tau$ used for the Epochs@$\tau$ column (e.g.\ first epoch reaching $\tau$ test accuracy).
+
+\input{tables/regularization_mnist_fcn}
 
 \subsection{Data-scarce regime}
 Because regularization effects are often most visible when data is limited, include a controlled ablation where the training set is reduced (e.g., 1\%, 5\%, 10\% of the full training data) while keeping the test set unchanged.
