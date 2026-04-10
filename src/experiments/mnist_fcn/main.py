@@ -15,15 +15,26 @@ from torch import nn
 
 from src.datasets.mnist import get_train_and_test_loaders
 from src.models.fcn import build_fcn
-from src.monitoring.csv_logs import write_history_csv
+from src.monitoring.csv_logs import write_history_csv, write_run_summary
 from src.monitoring.dynamics import TrainingDynamicsMonitor
 from src.monitoring.history import TrainingHistory
 from src.training.loop import apply_neural_balance, evaluate, full_balance_at_start, train_epoch
 from src.training.schedulers import build_lr_scheduler, build_optimizer
+from src.utils.parsing import str2bool
 from src.utils.repro import set_seed
 
 _DEFAULT_DATA_ROOT = _REPO_ROOT / "data"
-_DEFAULT_HIST_ROOT = _REPO_ROOT / "MNIST-FCN" / "hist"
+
+
+def _coerce_bool_flags(ns: argparse.Namespace) -> None:
+    """Normalize bool-like values (YAML may pass 0/1)."""
+    for name in (
+        "do_neural_balance",
+        "full_balance_at_start",
+        "reverse_balance_layer_order",
+        "tanh_on_output",
+    ):
+        setattr(ns, name, str2bool(getattr(ns, name)))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -41,12 +52,36 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--batchsize", type=int, default=256)
     p.add_argument("--l2_weight", type=float, default=0.0)
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--neural_balance", type=int, default=0)
-    p.add_argument("--neural_balance_epoch", type=int, default=1)
+    p.add_argument(
+        "--do-neural-balance",
+        dest="do_neural_balance",
+        type=str2bool,
+        default=False,
+        help="if true, apply periodic neural balance during training",
+    )
+    p.add_argument(
+        "--neural-balance-epoch",
+        dest="neural_balance_epoch",
+        type=int,
+        default=1,
+        help="when do_neural_balance is true, balance every this many epochs (ignored otherwise)",
+    )
     p.add_argument("--order", type=int, default=2)
-    p.add_argument("--neuralFullBalanceAtStart", type=int, default=0)
+    p.add_argument(
+        "--full-balance-at-start",
+        dest="full_balance_at_start",
+        type=str2bool,
+        default=False,
+        help="if true, run full neural balance once before training",
+    )
     p.add_argument("--trainDataFrac", type=float, default=1.0)
-    p.add_argument("--reversed", type=int, default=0)
+    p.add_argument(
+        "--reverse-balance-layer-order",
+        dest="reverse_balance_layer_order",
+        type=str2bool,
+        default=False,
+        help="if true, traverse layers from output toward input when balancing",
+    )
 
     p.add_argument(
         "--data_root",
@@ -55,22 +90,25 @@ def build_parser() -> argparse.ArgumentParser:
         help="MNIST download directory (default: <repo>/data)",
     )
     p.add_argument(
-        "--hist_root",
-        type=str,
-        default=str(_DEFAULT_HIST_ROOT),
-        help="root directory for CSV logs (default: MNIST-FCN/hist)",
-    )
-    p.add_argument(
-        "--foldername",
+        "--metrics-csv",
+        dest="metrics_csv",
         type=str,
         default=None,
-        help="subfolder under hist_root for CSV output",
+        help="path to write per-epoch metrics CSV (omit to skip writing)",
     )
     p.add_argument(
-        "--filename",
+        "--summary-json",
+        dest="summary_json",
         type=str,
         default=None,
-        help="CSV basename without extension",
+        help="path for table-aligned run summary JSON; default: <metrics_csv_dir>/summary.json",
+    )
+    p.add_argument(
+        "--target-tau",
+        dest="target_tau",
+        type=float,
+        default=95.0,
+        help="target test accuracy (%%) τ for Epochs@τ in summary.json (first epoch reaching ≥τ)",
     )
 
     p.add_argument(
@@ -81,10 +119,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="hidden activation (tanh matches legacy Mnist_tanh)",
     )
     p.add_argument(
-        "--tanh_on_output",
-        type=int,
-        default=0,
-        help="if 1, apply tanh to the final logits as well",
+        "--tanh-on-output",
+        dest="tanh_on_output",
+        type=str2bool,
+        default=False,
+        help="if true, apply tanh to the final logits as well",
     )
 
     p.add_argument(
@@ -105,6 +144,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def run_training(args: argparse.Namespace) -> TrainingHistory:
+    _coerce_bool_flags(args)
     set_seed(args.seed)
     device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
 
@@ -118,7 +158,7 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
     model = build_fcn(
         args.model,
         activation=args.activation,
-        tanh_on_output=bool(args.tanh_on_output),
+        tanh_on_output=args.tanh_on_output,
     ).to(device)
     print(model)
 
@@ -148,8 +188,8 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
         gamma=args.scheduler_gamma,
     )
 
-    reversed_layers = args.reversed != 0
-    if args.neuralFullBalanceAtStart == 1:
+    reversed_layers = args.reverse_balance_layer_order
+    if args.full_balance_at_start:
         full_balance_at_start(model, args.order, reversed_layers)
 
     history = TrainingHistory()
@@ -166,14 +206,17 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
             order=args.order,
         )
 
-        if args.neural_balance == 1 and epoch % args.neural_balance_epoch == 0:
+        if args.do_neural_balance and epoch % args.neural_balance_epoch == 0:
             apply_neural_balance(model, args.order, reversed_layers)
 
+        train_eval_loss, train_acc = evaluate(model, trainloader, criterion, device)
         test_loss, test_acc = evaluate(model, testloader, criterion, device)
         monitor.on_epoch_end(
             epoch,
             args.epochs,
             train_loss,
+            train_eval_loss,
+            train_acc,
             test_loss,
             test_acc,
             verbose=False,
@@ -186,10 +229,24 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
         if scheduler is not None:
             scheduler.step()
 
-    if args.foldername is not None and args.filename is not None:
-        out = Path(args.hist_root) / args.foldername / f"{args.filename}.csv"
+    if args.metrics_csv is not None:
+        out = Path(args.metrics_csv)
+        out.parent.mkdir(parents=True, exist_ok=True)
         write_history_csv(history, out)
         print(f"wrote {out}")
+
+        summary_path = (
+            Path(args.summary_json)
+            if args.summary_json is not None
+            else out.parent / "summary.json"
+        )
+        write_run_summary(
+            history,
+            summary_path,
+            target_tau_test_acc_pct=args.target_tau,
+            seed=args.seed,
+        )
+        print(f"wrote {summary_path}")
 
     return history
 

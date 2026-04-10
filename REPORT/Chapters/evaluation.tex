@@ -18,15 +18,17 @@ Report the main comparison table(s) here, typically including:
 
 \subsection{Regularization comparison on MNIST with a fully connected network}
 \label{subsec:reg-mnist-fcn}
-Table~\ref{tab:regularization-mnist-fcn} compares regularization methods under a single controlled setting: same dataset (MNIST), architecture family (fully connected), optimizer, batch size, training budget, and random seeds; only the regularization strategy changes between rows.
+Table~\ref{tab:regularization-mnist-fcn} compares regularization methods under a single controlled setting: same dataset (MNIST), architecture family (fully connected), optimizer, batch size, training budget, and target metric for speed; only the regularization strategy changes between rows.
 
-\paragraph{Fixed experimental setting (fill in).}
-Dataset: MNIST.
-Architecture: fully connected network with hidden width $W=\tbd$, number of hidden layers $=\tbd$, activation $=\tbd$, and output dimension $10$.
-Optimization: optimizer $=\tbd$, learning rate $=\tbd$, batch size $=\tbd$, weight decay (if not part of the row being varied) $=\tbd$.
-Training: epochs per run $=\tbd$; early-stopping row (if used) should use the same monitoring rule and maximum budget as other rows unless noted.
-Reproducibility: random seeds $=\tbd$; data splits and augmentation $=\tbd$.
-When reporting results, define the convergence threshold $\tau$ used for the Epochs@$\tau$ column (e.g.\ first epoch reaching $\tau$ test accuracy).
+\paragraph{Fixed experimental setting.}
+Dataset: MNIST (official train/test split; $60{,}000$ training and $10{,}000$ test images).
+Inputs: grayscale $28\!\times\!28$ flattened to $784$; ToTensor scaling to $[0,1]$ followed by per-channel normalization to $[-1,1]$ (mean $0.5$, std.\ $0.5$), as implemented in the code.
+Architecture: \texttt{small\_fcn} fully connected network, $784 \rightarrow 256 \rightarrow 10$, ReLU activations on the hidden layer, linear output (10 classes).
+Optimization: stochastic gradient descent (SGD) without momentum, learning rate $10^{-3}$, batch size $256$.
+Regularization control: rows that are ``plain'' use no explicit penalty ($L_2$ weight coefficient $0$); other rows use the same backbone unless otherwise noted.
+Training: $150$ epochs per run with a fixed-step budget (no early stopping unless a row is explicitly designated as early stopping).
+Target for convergence speed: test accuracy threshold $\tau = 95\%$; \emph{Epochs@$\tau$} is the first epoch (1-based index) at which test accuracy reaches or exceeds $\tau$.
+Reproducibility: we report runs with seed $42$ unless multiple seeds are used to estimate variance; $\sigma_{\mathrm{test}}$ in the table is computed across seeds when multiple runs are available.
 
 \input{tables/regularization_mnist_fcn}
 

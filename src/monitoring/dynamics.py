@@ -16,17 +16,21 @@ class TrainingDynamicsMonitor:
         epoch: int,
         num_epochs: int,
         train_loss: float,
+        train_eval_loss: float,
+        train_acc: float,
         test_loss: float,
         test_acc: float,
         *,
         verbose: bool = True,
     ) -> None:
         self.history.train_loss.append(train_loss)
+        self.history.train_eval_loss.append(train_eval_loss)
+        self.history.train_acc.append(train_acc)
         self.history.test_loss.append(test_loss)
         self.history.test_acc.append(test_acc)
         if verbose:
             print(
                 f"Epoch [{epoch + 1}/{num_epochs}], train loss: {train_loss:.4f} | "
-                f"test acc: {test_acc:.2f}% | test loss: {test_loss:.4f}"
+                f"train acc: {train_acc:.2f}% | test acc: {test_acc:.2f}% | test loss: {test_loss:.4f}"
             )
 

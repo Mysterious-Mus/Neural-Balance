@@ -33,10 +33,10 @@ class FCN(nn.Module):
         tanh_on_output: bool = False,
     ) -> None:
         super().__init__()
-        if activation == "relu":
-            self._hidden_act = nn.ReLU()
-        else:
-            self._hidden_act = nn.Tanh()
+        self._hidden_act = nn.ModuleDict({
+            "relu": nn.ReLU(),
+            "tanh": nn.Tanh(),
+        })[activation]
         self._tanh_on_output = tanh_on_output
 
         layers: List[nn.Module] = [nn.Linear(input_size, hidden_sizes[0])]

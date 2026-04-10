@@ -1,0 +1,35 @@
+# Plain baseline (no explicit regularization): MNIST + small FCN.
+# Matches the fixed protocol stated in REPORT (Section~\ref{subsec:reg-mnist-fcn}).
+# Launch from repo root:
+#   python -m src.experiments.mnist_fcn.launch_from_config experiments/mnist_fcn_regscomp/plain
+#
+# Logs: logs/train.csv (per epoch), logs/summary.json (aggregates; Epochs@τ uses target_tau).
+
+gpu: "6"  # Set to your CUDA device id; CPU if CUDA unavailable.
+
+epochs: 150  # Enough budget for MNIST; τ-reported speed uses target_tau below.
+lr: 0.001
+model: small_fcn  # 784 → 256 → 10 (one hidden layer); ReLU in hidden.
+dataset: mnist
+batchsize: 256
+
+# Plain mode: no weight decay / no L1 term in loss (order=2 + l2_weight>0 would be WD).
+l2_weight: 0.001
+order: 2
+seed: 42
+
+do_neural_balance: false
+# Period between balance steps when do_neural_balance is true; ignored when false.
+neural_balance_epoch: 1
+full_balance_at_start: false
+train_data_frac: 1.0  # Full 60k train split unless you run data-scarce experiments.
+reverse_balance_layer_order: false  # If true, balance from output layers toward input.
+
+activation: relu
+tanh_on_output: false
+lr_scheduler: none  # Constant LR; optimizer is SGD (see training code).
+scheduler_step_size: 30
+scheduler_gamma: 0.1
+
+# Target test accuracy τ (percent) for the Epochs@τ column in summary.json / report table.
+target_tau: 90.0

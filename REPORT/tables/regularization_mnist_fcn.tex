@@ -8,7 +8,7 @@
   \caption{%
     Regularization methods under one controlled MNIST + fully connected setting (details in Section~\ref{subsec:reg-mnist-fcn}).
     Rows vary only the regularization strategy; all other protocol choices match.
-    \emph{Epochs@$\tau$}: epochs until test accuracy first reaches threshold $\tau$ (state $\tau$ in the surrounding text).
+    \emph{Epochs@$\tau$}: first epoch (1-based) at which test accuracy reaches target $\tau$ (here $\tau=95\%$; see Section~\ref{subsec:reg-mnist-fcn}).
     \emph{Best test}: best test accuracy observed during training.
     \emph{Gap}: final train accuracy minus final test accuracy (percentage points).
     \emph{$\sigma_{\mathrm{test}}$}: standard deviation of final test accuracy across random seeds.%

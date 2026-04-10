@@ -11,3 +11,4 @@ browserbase
 rich
 pytest
 click
+pyyaml
