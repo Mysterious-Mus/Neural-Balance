@@ -1,0 +1,21 @@
+# Single source of truth for experiment/report constants.
+# Read by:
+# 1) experiment code (optional, by import/parse)
+# 2) scripts/generate_report_macros.py -> REPORT/generated/report_values.tex
+
+report:
+  validation_split_pct: 10
+  seed_list: [42, 43, 44]
+  bo:
+    total_candidates: 12
+    init_random: 4
+    guided: 8
+  training:
+    max_epochs: 150
+    learning_rate: 0.001
+    batch_size: 256
+  metrics:
+    target_tau_pct: 95.0
+  dataset:
+    mnist_train_size: 60000
+    mnist_test_size: 10000

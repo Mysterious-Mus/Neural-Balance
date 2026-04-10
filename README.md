@@ -103,3 +103,50 @@ Run it with:
 
 `python -m src.experiments.mnist_fcn.launch_from_config experiments/smoke_mnist_fcn`
 
+## Report Sync Workflow (Single Source of Truth)
+
+To reduce manual sync work between experiments and report text, this repo uses
+`configs/experiment_config.yaml` as a shared source for key constants.
+
+- Config file: `configs/experiment_config.yaml`
+- Macro generator: `scripts/generate_report_macros.py`
+- Generated TeX macros: `REPORT/generated/report_values.tex` (auto-generated)
+- One-command update script: `scripts/update_report.sh`
+
+### What gets synced
+
+The generator writes LaTeX macros such as:
+
+- `\ValSplitPct`, `\SeedList`, `\NumSeeds`
+- `\BOBudgetTotal`, `\BOBudgetInit`, `\BOBudgetGuided`
+- `\MaxEpochs`, `\LearningRate`, `\BatchSize`
+- `\TargetTauPct`, `\MnistTrainSize`, `\MnistTestSize`
+
+`REPORT/main.tex` includes this generated file via:
+
+`\\input{generated/report_values}`
+
+### Recommended usage
+
+From repo root:
+
+1. Edit `configs/experiment_config.yaml`
+2. Run:
+
+`bash scripts/update_report.sh`
+
+This will:
+
+1. regenerate `REPORT/generated/report_values.tex`
+2. compile the report (`pdflatex + bibtex + pdflatex + pdflatex`)
+
+If you run the generator directly, use:
+
+`python3 scripts/generate_report_macros.py`
+
+### Notes
+
+- Keep `REPORT/generated/report_values.tex` as generated output; do not edit by hand.
+- Tables are intentionally unchanged for now; this workflow currently syncs
+  report constants/macros first.
+
