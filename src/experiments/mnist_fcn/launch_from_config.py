@@ -1,6 +1,12 @@
-"""Launch MNIST FCN training from a YAML config next to experiment logs.
+"""Launch MNIST FCN training with authoritative YAML configs and logged copies.
 
-Run from the repository root::
+Recommended (single-source config under ``configs/``) from repo root::
+
+    python -m src.experiments.mnist_fcn.launch_from_config \
+      path/to/experiment_dir \
+      --config-path configs/your_config.yaml
+
+Legacy mode (load from the experiment directory itself)::
 
     python -m src.experiments.mnist_fcn.launch_from_config path/to/experiment_dir
 
@@ -9,31 +15,24 @@ Or from inside the experiment directory (must contain ``config.yaml``)::
     cd path/to/experiment_dir
     python -m src.experiments.mnist_fcn.launch_from_config .
 
-Paths in the config file that are not absolute are resolved relative to the
-experiment directory (except ``data_root`` defaults to ``<repo>/data`` when omitted).
-If ``metrics_csv`` is omitted, metrics are written to ``<experiment_dir>/logs/train.csv``.
+The loaded config is copied to ``<experiment_dir>/config.yaml`` by default for
+reproducibility logging. Paths in the config file that are not absolute are
+resolved relative to the experiment directory (except ``data_root`` defaults to
+``<repo>/data`` when omitted). If ``metrics_csv`` is omitted, metrics are
+written to ``<experiment_dir>/logs/train.csv``.
 """
 
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 from typing import Any, Mapping
 
-_REPO_ROOT = Path(__file__).resolve().parents[3]
-
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
-
-try:
-    import yaml
-except ImportError as e:  # pragma: no cover
-    raise ImportError(
-        "launch_from_config requires PyYAML. Install with: pip install pyyaml"
-    ) from e
-
+from src.experiments.mnist_fcn.config_loading import dump_logged_config, load_resolved_config
 from src.experiments.mnist_fcn.main import _coerce_bool_flags, build_parser, run_training
+from src.utils.paths import repo_root
+
+_REPO_ROOT = repo_root()
 
 
 # YAML keys may use snake_case aliases; values map onto argparse ``dest`` names.
@@ -55,6 +54,8 @@ _YAML_ALIASES: dict[str, str] = {
     "metrics_csv": "metrics_csv",
     "summary_json": "summary_json",
     "target_tau": "target_tau",
+    "val_split_pct": "validation_split_pct",
+    "validation_split_pct": "validation_split_pct",
     # Backward compatibility with older configs:
     "convergence_tau": "target_tau",
 }
@@ -108,21 +109,35 @@ def _resolve_paths(
     return out
 
 
+def _resolve_config_source_path(
+    experiment_dir: Path,
+    config_name: str,
+    config_path: str | Path | None,
+) -> Path:
+    if config_path is not None:
+        p = Path(config_path).expanduser()
+        if not p.is_absolute():
+            p = (_REPO_ROOT / p).resolve()
+        else:
+            p = p.resolve()
+        return p
+    return (experiment_dir / config_name).resolve()
+
+
 def load_config_and_args(
     experiment_dir: Path,
     config_name: str = "config.yaml",
+    *,
+    config_path: str | Path | None = None,
+    logged_config_name: str = "config.yaml",
 ) -> argparse.Namespace:
     experiment_dir = experiment_dir.resolve()
-    config_path = experiment_dir / config_name
-    if not config_path.is_file():
-        raise FileNotFoundError(f"Missing config file: {config_path}")
+    source_config_path = _resolve_config_source_path(experiment_dir, config_name, config_path)
+    if not source_config_path.is_file():
+        raise FileNotFoundError(f"Missing config file: {source_config_path}")
 
-    with config_path.open("r", encoding="utf-8") as f:
-        raw = yaml.safe_load(f)
-    if raw is None:
-        raw = {}
-    if not isinstance(raw, dict):
-        raise TypeError(f"Config root must be a mapping, got {type(raw)}")
+    raw, _resolved_source = load_resolved_config(source_config_path)
+    dump_logged_config((experiment_dir / logged_config_name).resolve(), raw)
 
     parser = build_parser()
     allowed = _parser_destinations(parser)
@@ -136,22 +151,39 @@ def load_config_and_args(
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Run MNIST FCN training from a YAML config.")
+    p = argparse.ArgumentParser(
+        description="Run MNIST FCN training from an authoritative YAML config."
+    )
     p.add_argument(
         "experiment_dir",
         nargs="?",
         default=Path("."),
         type=Path,
-        help="Directory containing config.yaml and (by default) logs/ output",
+        help="Experiment output directory (logs are written here)",
     )
     p.add_argument(
         "--config",
         default="config.yaml",
-        help="Config filename inside the experiment directory",
+        help="Config filename inside experiment_dir (ignored when --config-path is provided)",
+    )
+    p.add_argument(
+        "--config-path",
+        default=None,
+        help="Authoritative config path relative to repo root or absolute (recommended: configs/...)",
+    )
+    p.add_argument(
+        "--logged-config-name",
+        default="config.yaml",
+        help="Filename used when logging the loaded config into experiment_dir",
     )
     launch_args = p.parse_args()
 
-    args = load_config_and_args(launch_args.experiment_dir, launch_args.config)
+    args = load_config_and_args(
+        launch_args.experiment_dir,
+        launch_args.config,
+        config_path=launch_args.config_path,
+        logged_config_name=launch_args.logged_config_name,
+    )
     run_training(args)
 
 

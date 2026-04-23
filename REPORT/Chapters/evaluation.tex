@@ -21,7 +21,7 @@ Report the main comparison table(s) here, typically including:
 Table~\ref{tab:regularization-mnist-fcn} compares regularization methods after selecting each method's own hyperparameters on a \emph{validation} split using a unified protocol. Everything below is shared across methods except the meaning of each method's grid point (the knob being swept).
 
 \paragraph{Validation-based hyperparameter protocol (GP Bayesian optimization).}
-Hyperparameters are selected on a validation split using Gaussian-Process (GP) Bayesian optimization; the test set is used only for final numbers in Table~\ref{tab:regularization-mnist-fcn}. The protocol is:
+Hyperparameters are selected on a validation split using Gaussian-Process (GP) Bayesian optimization; the test set is used only for final numbers in Table~\ref{tab:regularization-mnist-fcn}. Here, Bayesian optimization (BO) is a sample-efficient search method for expensive black-box objectives (mean validation accuracy after training): it uses a GP surrogate to predict promising regions and an Expected-Improvement acquisition rule to balance exploration and exploitation, and one BO step in this report means evaluating one candidate configuration across the fixed seed list. The protocol is:
 \begin{itemize}
   \item \textbf{Shared training protocol:} identical dataset splits, architecture, optimizer type, learning rate, batch size, maximum epochs, and early-stopping rule (when applicable), unless a row is explicitly ablating one of these.
   \item \textbf{Validation-only selection:} we hold out a validation subset of the training data (e.g.\ $\ValSplitPct\%$ of training examples, stratified by class). Bayesian optimization targets mean validation accuracy; test labels are never used during search.

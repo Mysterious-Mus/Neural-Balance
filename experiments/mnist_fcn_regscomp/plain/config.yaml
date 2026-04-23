@@ -1,9 +1,14 @@
+# Logged copy of authoritative config:
+#   configs/mnist_fcn_regscomp/plain.yaml
+# To refresh this logged file, run with --config-path as shown in README.
+#
 # Plain baseline (no explicit regularization): MNIST + small FCN.
-# Matches the fixed protocol stated in REPORT (Section~\ref{subsec:reg-mnist-fcn}).
 # Launch from repo root:
-#   python -m src.experiments.mnist_fcn.launch_from_config experiments/mnist_fcn_regscomp/plain
+#   python -m src.experiments.mnist_fcn.launch_from_config experiments/mnist_fcn_regscomp/plain --config-path configs/mnist_fcn_regscomp/plain.yaml
 #
 # Logs: logs/train.csv (per epoch), logs/summary.json (aggregates; Epochs@τ uses target_tau).
+
+_source_config_path: configs/mnist_fcn_regscomp/plain.yaml
 
 gpu: "6"  # Set to your CUDA device id; CPU if CUDA unavailable.
 
@@ -32,4 +37,4 @@ scheduler_step_size: 30
 scheduler_gamma: 0.1
 
 # Target test accuracy τ (percent) for the Epochs@τ column in summary.json / report table.
-target_tau: 90.0
+target_tau: 90.0 

@@ -1,19 +1,16 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parents[3]
+from src.utils.paths import repo_root
 
-# Allow running this file directly (`python src/experiments/.../main.py ...`).
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+_REPO_ROOT = repo_root()
 
 import torch
 from torch import nn
 
-from src.datasets.mnist import get_train_and_test_loaders
+from src.datasets.mnist import get_train_val_and_test_loaders
 from src.models.fcn import build_fcn
 from src.monitoring.csv_logs import write_history_csv, write_run_summary
 from src.monitoring.dynamics import TrainingDynamicsMonitor
@@ -135,6 +132,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--scheduler_step_size", type=int, default=30)
     p.add_argument("--scheduler_gamma", type=float, default=0.1)
+    p.add_argument(
+        "--validation-split-pct",
+        dest="validation_split_pct",
+        type=float,
+        default=10.0,
+        help="percent of training data held out for per-epoch validation",
+    )
 
     return p
 
@@ -148,9 +152,10 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
     set_seed(args.seed)
     device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
 
-    trainloader, testloader = get_train_and_test_loaders(
+    trainloader, valloader, testloader = get_train_val_and_test_loaders(
         args.batchsize,
         args.seed,
+        val_fraction=max(1e-8, float(args.validation_split_pct) / 100.0),
         train_fraction=args.trainDataFrac,
         data_root=args.data_root,
     )
@@ -210,24 +215,28 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
             apply_neural_balance(model, args.order, reversed_layers)
 
         train_eval_loss, train_acc = evaluate(model, trainloader, criterion, device)
-        test_loss, test_acc = evaluate(model, testloader, criterion, device)
+        val_loss, val_acc = evaluate(model, valloader, criterion, device)
         monitor.on_epoch_end(
             epoch,
             args.epochs,
             train_loss,
             train_eval_loss,
             train_acc,
-            test_loss,
-            test_acc,
+            val_loss,
+            val_acc,
             verbose=False,
         )
 
         print(f"Epoch [{epoch + 1}/{args.epochs}], Loss: {train_loss:.4f}")
-        print(f"Accuracy of the network on the 10000 test images: {test_acc:.2f}%")
-        print(f"Loss of the network on the 10000 test images: {test_loss:.4f}")
+        print(f"Validation accuracy: {val_acc:.2f}%")
+        print(f"Validation loss: {val_loss:.4f}")
 
         if scheduler is not None:
             scheduler.step()
+
+    final_test_loss, final_test_acc = evaluate(model, testloader, criterion, device)
+    print(f"Final test accuracy: {final_test_acc:.2f}%")
+    print(f"Final test loss: {final_test_loss:.4f}")
 
     if args.metrics_csv is not None:
         out = Path(args.metrics_csv)
@@ -243,8 +252,10 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
         write_run_summary(
             history,
             summary_path,
-            target_tau_test_acc_pct=args.target_tau,
+            target_tau_val_acc_pct=args.target_tau,
             seed=args.seed,
+            final_test_acc_pct=final_test_acc,
+            final_test_loss=final_test_loss,
         )
         print(f"wrote {summary_path}")
 

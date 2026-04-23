@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Sequence, Tuple
 
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Subset
@@ -72,4 +72,57 @@ def get_train_and_test_loaders(
         data_root=data_root,
     )
     return train, test
+
+
+def _labels_for_dataset(dataset: datasets.MNIST | Subset) -> Sequence[int]:
+    if isinstance(dataset, datasets.MNIST):
+        return dataset.targets.tolist()
+    if isinstance(dataset, Subset):
+        base_labels = _labels_for_dataset(dataset.dataset)
+        return [base_labels[i] for i in dataset.indices]
+    raise TypeError(f"unsupported dataset type for label extraction: {type(dataset)!r}")
+
+
+def get_train_val_and_test_loaders(
+    batch_size: int,
+    seed: int,
+    *,
+    val_fraction: float,
+    train_fraction: float = 1.0,
+    normalize: bool = True,
+    data_root: str = "./data",
+) -> Tuple[DataLoader, DataLoader, DataLoader]:
+    if not (0.0 < val_fraction < 1.0):
+        raise ValueError(f"val_fraction must be in (0,1), got {val_fraction}")
+
+    base_train = get_mnist_loaders(
+        batch_size,
+        seed,
+        train_fraction=train_fraction,
+        test=False,
+        normalize=normalize,
+        data_root=data_root,
+    )
+    dataset = base_train.dataset
+    labels = _labels_for_dataset(dataset)
+    indices = list(range(len(dataset)))
+    train_indices, val_indices = train_test_split(
+        indices,
+        test_size=val_fraction,
+        random_state=seed,
+        stratify=labels,
+    )
+    train_subset = Subset(dataset, train_indices)
+    val_subset = Subset(dataset, val_indices)
+    train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_subset, batch_size=batch_size, shuffle=False)
+    test_loader = get_mnist_loaders(
+        batch_size,
+        seed,
+        train_fraction=1.0,
+        test=True,
+        normalize=normalize,
+        data_root=data_root,
+    )
+    return train_loader, val_loader, test_loader
 

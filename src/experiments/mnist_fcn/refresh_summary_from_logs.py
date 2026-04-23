@@ -2,12 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
-
-_REPO_ROOT = Path(__file__).resolve().parents[3]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
 
 from src.experiments.mnist_fcn.launch_from_config import load_config_and_args
 from src.monitoring.csv_logs import write_run_summary_from_history_csv
