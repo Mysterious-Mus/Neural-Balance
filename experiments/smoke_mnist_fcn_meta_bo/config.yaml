@@ -1,0 +1,31 @@
+# Smoke meta experiment for BO pipeline validation.
+# Run from repo root:
+#   python -m src.experiments.mnist_fcn.run_bo_meta_experiment experiments/smoke_mnist_fcn_meta_bo
+
+base_experiment_dir: ../smoke_mnist_fcn
+base_config_name: config.yaml
+
+validation_split_pct: 10
+seeds: [0]
+objective: mean_final_val_acc_pct
+
+bo:
+  total_candidates: 2
+  init_random: 1
+  guided: 1
+  acquisition_samples: 128
+  seed: 7
+  xi: 0.01
+
+static_overrides:
+  gpu: "cpu"
+  order: 2
+  do_neural_balance: false
+  full_balance_at_start: false
+
+search_space:
+  - name: l2_weight
+    type: float
+    low: 1.0e-5
+    high: 5.0e-4
+    log_scale: true

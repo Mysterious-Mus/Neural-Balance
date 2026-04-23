@@ -1,0 +1,54 @@
+{
+  "meta_experiment_dir": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/l2_reg_BO_smoke",
+  "meta_config_source_path": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/l2_reg_BO_smoke/config.yaml",
+  "base_config_source_mode": "inline.base_config",
+  "base_config_source_path": null,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "runtime": {
+    "parallel_seeds": 3,
+    "gpu_pool": [
+      "0",
+      "1",
+      "2"
+    ],
+    "python_executable": "/usr/bin/python"
+  },
+  "bo": {
+    "total_candidates": 12,
+    "init_random": 4,
+    "guided": 8,
+    "acquisition_samples": 2048,
+    "seed": 1234,
+    "xi": 0.01
+  },
+  "objective": "mean_final_val_acc_pct",
+  "search_space": [
+    {
+      "name": "l2_weight",
+      "type": "float",
+      "low": 1e-05,
+      "high": 0.003,
+      "log_scale": true
+    }
+  ],
+  "static_overrides": {
+    "order": 2,
+    "do_neural_balance": false,
+    "full_balance_at_start": false
+  },
+  "best_trial": {
+    "trial": "trial_007",
+    "proposal_source": "gp_ei",
+    "objective_name": "mean_final_val_acc_pct",
+    "objective_value": 76.27222222222223,
+    "mean_final_val_acc_pct": 76.27222222222223,
+    "mean_final_test_acc_pct": 77.64,
+    "sigma_final_test_acc_pct_across_seeds": 1.3642946895740689,
+    "l2_weight": 1.9777103547850948e-05
+  },
+  "all_trials_csv": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/l2_reg_BO_smoke/bo_trials.csv"
+}

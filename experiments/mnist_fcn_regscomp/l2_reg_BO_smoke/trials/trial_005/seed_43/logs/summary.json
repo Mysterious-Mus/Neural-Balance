@@ -1,0 +1,17 @@
+{
+  "target_tau_val_acc_pct": 90.0,
+  "target_tau_test_acc_pct": 90.0,
+  "epochs_at_tau": null,
+  "final_train_acc_pct": 77.92222222222222,
+  "final_train_loss_batch_mean": 1.436737458287822,
+  "final_train_loss_eval": 1.3534616774292354,
+  "final_val_acc_pct": 77.88333333333334,
+  "final_val_loss": 1.3547431131203969,
+  "best_val_acc_pct": 77.88333333333334,
+  "final_test_acc_pct": 78.61,
+  "final_test_loss": 1.3340508788824081,
+  "best_test_acc_pct": 77.88333333333334,
+  "generalization_gap_train_minus_test_ppts": -0.6877777777777823,
+  "sigma_final_test_acc_pct_across_seeds": null,
+  "seed": 43
+}
