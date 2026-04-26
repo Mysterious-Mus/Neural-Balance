@@ -47,6 +47,11 @@ Reproducibility: the seed list is fixed \emph{a priori} (see above); $\sigma_{\m
 
 \input{tables/regularization_mnist_fcn}
 
+\paragraph{Main takeaways.}
+Among the BO-selected methods, synaptic balance ($L_1$) is the clear standout in this controlled setting: it reaches $\tau$ in \RegMnistSynBalLOneEpochsAtTau epochs and finishes at \RegMnistSynBalLOneFinalTestAccPct\% final test accuracy, which is \RegMnistSynBalLOneGainOverBestNonBalancePpts percentage points above the strongest non-balance baseline (\RegMnistBestNonBalanceFinalTestAccPct\%). Synaptic balance ($L_2$) is also the fastest among the non-$L_1$ alternatives and still improves on the strongest non-balance baseline by \RegMnistSynBalLTwoGainOverBestNonBalancePpts percentage points.
+
+The conventional regularizers cluster much more tightly: $L_1$ penalty, $L_2$ weight decay, and early stopping all finish around 91.96\% test accuracy, while dropout is the best non-balance baseline at \RegMnistDropoutFinalTestAccPct\%. Their train--test gaps are slightly negative, suggesting mild underfitting in this setting, whereas synaptic balance ($L_1$) keeps the best held-out performance despite a positive gap of \RegMnistSynBalLOneGapPpts percentage points. The plain baseline currently has only \RegMnistPlainSeedCount completed seed, so its $\sigma_{\mathrm{test}}$ entry is intentionally left blank.
+
 \subsection{Data-scarce regime}
 Because regularization effects are often most visible when data is limited, include a controlled ablation where the training set is reduced (e.g., 1\%, 5\%, 10\% of the full training data) while keeping the test set unchanged.
 

@@ -8,8 +8,9 @@
   \caption{%
     Regularization methods under one controlled MNIST + fully connected setting (details in Section~\ref{subsec:reg-mnist-fcn}).
     Rows vary only the regularization strategy; all other protocol choices match.
-    \emph{Epochs@$\tau$}: first epoch (1-based) at which test accuracy reaches target $\tau$ (here $\tau=95\%$; see Section~\ref{subsec:reg-mnist-fcn}).
-    \emph{Best test}: best test accuracy observed during training.
+    For BO-selected rows, scalar entries report means across the fixed seed list; the plain row reports the available single run.
+    \emph{Epochs@$\tau$}: first epoch (1-based) at which test accuracy reaches target $\tau$ (here $\tau=\TargetTauPct\%$; see Section~\ref{subsec:reg-mnist-fcn}).
+    \emph{Best val}: best validation accuracy observed during training.
     \emph{Gap}: final train accuracy minus final test accuracy (percentage points).
     \emph{$\sigma_{\mathrm{test}}$}: standard deviation of final test accuracy across random seeds.%
   }
@@ -22,24 +23,24 @@
     & \begin{tabular}{@{}c@{}}Final\\train loss\end{tabular}
     & \begin{tabular}{@{}c@{}}Final\\test acc.\end{tabular}
     & \begin{tabular}{@{}c@{}}Final\\test loss\end{tabular}
-    & \begin{tabular}{@{}c@{}}Best\\test acc.\end{tabular}
+    & \begin{tabular}{@{}c@{}}Best\\val acc.\end{tabular}
     & Gap
     & $\sigma_{\mathrm{test}}$ \\
     \midrule
     Plain (no explicit reg.)
-    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    & \RegMnistPlainEpochsAtTau & \RegMnistPlainFinalTrainAccPct & \RegMnistPlainFinalTrainLoss & \RegMnistPlainFinalTestAccPct & \RegMnistPlainFinalTestLoss & \RegMnistPlainBestValAccPct & \RegMnistPlainGapPpts & \RegMnistPlainSigmaFinalTestAccPct \\
     $L_2$ weight decay
-    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    & \RegMnistLTwoEpochsAtTau & \RegMnistLTwoFinalTrainAccPct & \RegMnistLTwoFinalTrainLoss & \RegMnistLTwoFinalTestAccPct & \RegMnistLTwoFinalTestLoss & \RegMnistLTwoBestValAccPct & \RegMnistLTwoGapPpts & \RegMnistLTwoSigmaFinalTestAccPct \\
     $L_1$ penalty
-    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    & \RegMnistLOneEpochsAtTau & \RegMnistLOneFinalTrainAccPct & \RegMnistLOneFinalTrainLoss & \RegMnistLOneFinalTestAccPct & \RegMnistLOneFinalTestLoss & \RegMnistLOneBestValAccPct & \RegMnistLOneGapPpts & \RegMnistLOneSigmaFinalTestAccPct \\
     Dropout
-    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    & \RegMnistDropoutEpochsAtTau & \RegMnistDropoutFinalTrainAccPct & \RegMnistDropoutFinalTrainLoss & \RegMnistDropoutFinalTestAccPct & \RegMnistDropoutFinalTestLoss & \RegMnistDropoutBestValAccPct & \RegMnistDropoutGapPpts & \RegMnistDropoutSigmaFinalTestAccPct \\
     Early stopping (same budget)
-    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    & \RegMnistEarlyStopEpochsAtTau & \RegMnistEarlyStopFinalTrainAccPct & \RegMnistEarlyStopFinalTrainLoss & \RegMnistEarlyStopFinalTestAccPct & \RegMnistEarlyStopFinalTestLoss & \RegMnistEarlyStopBestValAccPct & \RegMnistEarlyStopGapPpts & \RegMnistEarlyStopSigmaFinalTestAccPct \\
     Synaptic balance ($L_1$)
-    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    & \RegMnistSynBalLOneEpochsAtTau & \RegMnistSynBalLOneFinalTrainAccPct & \RegMnistSynBalLOneFinalTrainLoss & \RegMnistSynBalLOneFinalTestAccPct & \RegMnistSynBalLOneFinalTestLoss & \RegMnistSynBalLOneBestValAccPct & \RegMnistSynBalLOneGapPpts & \RegMnistSynBalLOneSigmaFinalTestAccPct \\
     Synaptic balance ($L_2$)
-    & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+    & \RegMnistSynBalLTwoEpochsAtTau & \RegMnistSynBalLTwoFinalTrainAccPct & \RegMnistSynBalLTwoFinalTrainLoss & \RegMnistSynBalLTwoFinalTestAccPct & \RegMnistSynBalLTwoFinalTestLoss & \RegMnistSynBalLTwoBestValAccPct & \RegMnistSynBalLTwoGapPpts & \RegMnistSynBalLTwoSigmaFinalTestAccPct \\
     \bottomrule
   \end{tabular}
 \end{table}
