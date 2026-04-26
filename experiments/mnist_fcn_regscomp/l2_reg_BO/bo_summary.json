@@ -41,14 +41,14 @@
     "full_balance_at_start": false
   },
   "best_trial": {
-    "trial": "trial_002",
-    "proposal_source": "random_init",
+    "trial": "trial_004",
+    "proposal_source": "gp_ei",
     "objective_name": "mean_final_val_acc_pct",
-    "objective_value": 92.21666666666665,
-    "mean_final_val_acc_pct": 92.21666666666665,
-    "mean_final_test_acc_pct": 92.21666666666665,
-    "sigma_final_test_acc_pct_across_seeds": 0.06429100507328979,
-    "l2_weight": 1.0436557728822442e-05
+    "objective_value": 91.48333333333333,
+    "mean_final_val_acc_pct": 91.48333333333333,
+    "mean_final_test_acc_pct": 91.96,
+    "sigma_final_test_acc_pct_across_seeds": 0.11532562594670966,
+    "l2_weight": 2.5042035356024605e-05
   },
   "all_trials_csv": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/l2_reg_BO/bo_trials.csv"
 }

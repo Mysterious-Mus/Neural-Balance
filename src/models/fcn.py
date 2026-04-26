@@ -31,6 +31,7 @@ class FCN(nn.Module):
         *,
         activation: ActivationName = "relu",
         tanh_on_output: bool = False,
+        dropout_rate: float = 0.0,
     ) -> None:
         super().__init__()
         self._hidden_act = nn.ModuleDict({
@@ -38,16 +39,23 @@ class FCN(nn.Module):
             "tanh": nn.Tanh(),
         })[activation]
         self._tanh_on_output = tanh_on_output
+        self._dropout_rate = float(dropout_rate)
+        if not (0.0 <= self._dropout_rate < 1.0):
+            raise ValueError("dropout_rate must be in [0.0, 1.0)")
 
         layers: List[nn.Module] = [nn.Linear(input_size, hidden_sizes[0])]
         for i in range(len(hidden_sizes) - 1):
             layers.append(nn.Linear(hidden_sizes[i], hidden_sizes[i + 1]))
         layers.append(nn.Linear(hidden_sizes[-1], num_classes))
         self.layers = nn.ModuleList(layers)
+        self.dropouts = nn.ModuleList(
+            [nn.Dropout(self._dropout_rate) for _ in range(len(hidden_sizes))]
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        for layer in self.layers[:-1]:
+        for i, layer in enumerate(self.layers[:-1]):
             x = self._hidden_act(layer(x))
+            x = self.dropouts[i](x)
         x = self.layers[-1](x)
         # Legacy `Mnist_tanh.py` applied tanh to the logits as well.
         if self._tanh_on_output:
@@ -56,7 +64,11 @@ class FCN(nn.Module):
 
 
 def build_fcn(
-    name: str, *, activation: ActivationName = "relu", tanh_on_output: bool = False
+    name: str,
+    *,
+    activation: ActivationName = "relu",
+    tanh_on_output: bool = False,
+    dropout_rate: float = 0.0,
 ) -> FCN:
     if name not in _PRESETS:
         raise ValueError(
@@ -64,6 +76,11 @@ def build_fcn(
         )
     hidden = _PRESETS[name]
     return FCN(
-        784, hidden, 10, activation=activation, tanh_on_output=tanh_on_output
+        784,
+        hidden,
+        10,
+        activation=activation,
+        tanh_on_output=tanh_on_output,
+        dropout_rate=dropout_rate,
     )
 

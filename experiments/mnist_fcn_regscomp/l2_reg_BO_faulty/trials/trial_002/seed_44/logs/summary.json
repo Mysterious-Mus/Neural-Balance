@@ -1,0 +1,13 @@
+{
+  "target_tau_test_acc_pct": 90.0,
+  "epochs_at_tau": 51,
+  "final_train_acc_pct": 92.01,
+  "final_train_loss_batch_mean": 0.28119511857945867,
+  "final_train_loss_eval": 0.2807918946159647,
+  "final_test_acc_pct": 92.19,
+  "final_test_loss": 0.26924365097656844,
+  "best_test_acc_pct": 92.19,
+  "generalization_gap_train_minus_test_ppts": -0.1799999999999926,
+  "sigma_final_test_acc_pct_across_seeds": null,
+  "seed": 44
+}

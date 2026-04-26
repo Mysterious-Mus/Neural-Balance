@@ -1,0 +1,19 @@
+{
+  "trial": "trial_003",
+  "proposal_source": "random_init",
+  "candidate": {
+    "dropout_rate": 0.4554879812245621
+  },
+  "resolved_overrides": {
+    "order": 2,
+    "l2_weight": 0.0,
+    "do_neural_balance": false,
+    "full_balance_at_start": false,
+    "dropout_rate": 0.4554879812245621
+  },
+  "seed_gpu_assignments": {
+    "42": "0",
+    "43": "1",
+    "44": "2"
+  }
+}

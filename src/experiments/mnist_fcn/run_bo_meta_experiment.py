@@ -116,6 +116,22 @@ def _candidate_key(candidate: Mapping[str, Any]) -> str:
     return json.dumps(candidate, sort_keys=True, separators=(",", ":"))
 
 
+def _discrete_space_size(dims: Sequence[SearchDimension]) -> int | None:
+    total = 1
+    for dim in dims:
+        if dim.kind == "bool":
+            total *= 2
+        elif dim.kind == "categorical":
+            total *= len(dim.categories)
+        elif dim.kind == "int":
+            assert dim.low is not None and dim.high is not None
+            total *= max(0, int(dim.high) - int(dim.low) + 1)
+        else:
+            # Any continuous dimension makes the space effectively unbounded.
+            return None
+    return total
+
+
 def _sample_unique_candidate(
     dims: Sequence[SearchDimension],
     rng: random.Random,
@@ -170,14 +186,31 @@ def _propose_guided_candidate(
         n_restarts_optimizer=2,
     )
     gp.fit(x_train, y_train)
+    max_discrete = _discrete_space_size(dims)
+    if max_discrete is not None:
+        remaining = max_discrete - len(seen)
+        if remaining <= 0:
+            raise RuntimeError("search space exhausted: no unseen candidates remain")
+        sample_budget = min(acquisition_samples, remaining)
+    else:
+        sample_budget = acquisition_samples
+
     pool: list[dict[str, Any]] = []
-    while len(pool) < acquisition_samples:
+    attempts = 0
+    max_attempts = max(1000, sample_budget * 100)
+    while len(pool) < sample_budget and attempts < max_attempts:
+        attempts += 1
         cand = {dim.name: dim.sample(rng) for dim in dims}
         key = _candidate_key(cand)
         if key in seen:
             continue
         pool.append(cand)
         seen.add(key)
+    if not pool:
+        raise RuntimeError(
+            "failed to build guided candidate pool; try reducing bo.acquisition_samples "
+            "or enlarging the search space"
+        )
     x_pool = np.array([_encode_candidate(dims, c) for c in pool], dtype=float)
     ei = _expected_improvement(gp, x_pool, best_y=max(y_train), xi=xi)
     return pool[int(np.argmax(ei))]
@@ -249,17 +282,22 @@ def _run_seed_job(seed_dir: Path, python_executable: str) -> dict[str, Any]:
         "--config",
         "config.yaml",
     ]
-    result = subprocess.run(
-        cmd,
-        cwd=str(repo_root()),
-        capture_output=True,
-        text=True,
-    )
+    logs_dir = seed_dir / "logs"
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    run_log = logs_dir / "run.log"
+    with run_log.open("w", encoding="utf-8") as logf:
+        result = subprocess.run(
+            cmd,
+            cwd=str(repo_root()),
+            stdout=logf,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
     if result.returncode != 0:
         raise RuntimeError(
             f"seed run failed in {seed_dir}\n"
             f"command: {' '.join(cmd)}\n"
-            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}"
+            f"see log: {run_log}"
         )
     summary_path = seed_dir / "logs" / "summary.json"
     if not summary_path.is_file():
@@ -368,6 +406,15 @@ def run_meta_experiment(
     if objective_name not in {"mean_final_val_acc_pct", "mean_final_test_acc_pct"}:
         raise ValueError("objective must be mean_final_val_acc_pct or mean_final_test_acc_pct")
 
+    max_discrete = _discrete_space_size(dims)
+    effective_total_candidates = bo_spec.total_candidates
+    if max_discrete is not None and bo_spec.total_candidates > max_discrete:
+        effective_total_candidates = max_discrete
+        print(
+            "warning: requested bo.total_candidates exceeds finite search space; "
+            f"capping trials to {effective_total_candidates} (requested {bo_spec.total_candidates})"
+        )
+
     rng = random.Random(bo_spec.seed)
     trials_dir.mkdir(parents=True, exist_ok=True)
 
@@ -375,7 +422,7 @@ def run_meta_experiment(
     objective_values: list[float] = []
     trial_rows: list[dict[str, Any]] = []
 
-    for trial_idx in range(bo_spec.total_candidates):
+    for trial_idx in range(effective_total_candidates):
         seen = {_candidate_key(c) for c in evaluated_candidates}
         if trial_idx < bo_spec.init_random or len(evaluated_candidates) < 2:
             candidate = _sample_unique_candidate(dims, rng, seen)
@@ -496,6 +543,8 @@ def run_meta_experiment(
             "python_executable": runtime.python_executable,
         },
         "bo": {
+            "requested_total_candidates": bo_spec.total_candidates,
+            "executed_total_candidates": len(trial_rows),
             "total_candidates": bo_spec.total_candidates,
             "init_random": bo_spec.init_random,
             "guided": bo_spec.guided,

@@ -116,6 +116,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="hidden activation (tanh matches legacy Mnist_tanh)",
     )
     p.add_argument(
+        "--dropout-rate",
+        dest="dropout_rate",
+        type=float,
+        default=0.0,
+        help="dropout probability applied after each hidden activation",
+    )
+    p.add_argument(
         "--tanh-on-output",
         dest="tanh_on_output",
         type=str2bool,
@@ -138,6 +145,20 @@ def build_parser() -> argparse.ArgumentParser:
         type=float,
         default=10.0,
         help="percent of training data held out for per-epoch validation",
+    )
+    p.add_argument(
+        "--early-stopping-patience",
+        dest="early_stopping_patience",
+        type=int,
+        default=0,
+        help="stop when validation accuracy has not improved for K epochs (0 disables)",
+    )
+    p.add_argument(
+        "--early-stopping-min-delta",
+        dest="early_stopping_min_delta",
+        type=float,
+        default=0.0,
+        help="minimum validation-accuracy improvement considered meaningful",
     )
 
     return p
@@ -164,6 +185,7 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
         args.model,
         activation=args.activation,
         tanh_on_output=args.tanh_on_output,
+        dropout_rate=args.dropout_rate,
     ).to(device)
     print(model)
 
@@ -199,6 +221,8 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
 
     history = TrainingHistory()
     monitor = TrainingDynamicsMonitor(history)
+    best_val_acc = float("-inf")
+    epochs_without_improvement = 0
 
     for epoch in range(args.epochs):
         train_loss = train_epoch(
@@ -230,6 +254,20 @@ def run_training(args: argparse.Namespace) -> TrainingHistory:
         print(f"Epoch [{epoch + 1}/{args.epochs}], Loss: {train_loss:.4f}")
         print(f"Validation accuracy: {val_acc:.2f}%")
         print(f"Validation loss: {val_loss:.4f}")
+
+        if args.early_stopping_patience > 0:
+            if val_acc > (best_val_acc + float(args.early_stopping_min_delta)):
+                best_val_acc = val_acc
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
+                if epochs_without_improvement >= int(args.early_stopping_patience):
+                    print(
+                        "Early stopping triggered: "
+                        f"no val-acc improvement > {args.early_stopping_min_delta} "
+                        f"for {args.early_stopping_patience} epochs."
+                    )
+                    break
 
         if scheduler is not None:
             scheduler.step()

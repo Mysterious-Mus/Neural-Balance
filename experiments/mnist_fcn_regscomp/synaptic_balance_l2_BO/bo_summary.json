@@ -1,0 +1,57 @@
+{
+  "meta_experiment_dir": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/synaptic_balance_l2_BO",
+  "meta_config_source_path": "/workspaces/Neural-Balance/configs/experiment_config.yaml",
+  "base_config_source_mode": "base_config_path",
+  "base_config_source_path": "/workspaces/Neural-Balance/configs/experiment_config.yaml",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "runtime": {
+    "parallel_seeds": 3,
+    "gpu_pool": [
+      "0",
+      "1",
+      "2"
+    ],
+    "python_executable": "/usr/bin/python"
+  },
+  "bo": {
+    "requested_total_candidates": 12,
+    "executed_total_candidates": 12,
+    "total_candidates": 12,
+    "init_random": 4,
+    "guided": 8,
+    "acquisition_samples": 2048,
+    "seed": 1234,
+    "xi": 0.01
+  },
+  "objective": "mean_final_val_acc_pct",
+  "search_space": [
+    {
+      "name": "neural_balance_epoch",
+      "type": "int",
+      "low": 1,
+      "high": 12,
+      "log_scale": false
+    }
+  ],
+  "static_overrides": {
+    "order": 2,
+    "l2_weight": 0.0,
+    "do_neural_balance": true,
+    "full_balance_at_start": false
+  },
+  "best_trial": {
+    "trial": "trial_000",
+    "proposal_source": "random_init",
+    "objective_name": "mean_final_val_acc_pct",
+    "objective_value": 92.45555555555556,
+    "mean_final_val_acc_pct": 92.45555555555556,
+    "mean_final_test_acc_pct": 92.74666666666667,
+    "sigma_final_test_acc_pct_across_seeds": 0.040414518843280414,
+    "neural_balance_epoch": 8
+  },
+  "all_trials_csv": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/synaptic_balance_l2_BO/bo_trials.csv"
+}

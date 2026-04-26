@@ -2,13 +2,13 @@
   "trial": "trial_009",
   "proposal_source": "gp_ei",
   "candidate": {
-    "l2_weight": 0.00019577796446006257
+    "l2_weight": 0.00021682778832445511
   },
   "resolved_overrides": {
     "order": 2,
     "do_neural_balance": false,
     "full_balance_at_start": false,
-    "l2_weight": 0.00019577796446006257
+    "l2_weight": 0.00021682778832445511
   },
   "seed_gpu_assignments": {
     "42": "0",

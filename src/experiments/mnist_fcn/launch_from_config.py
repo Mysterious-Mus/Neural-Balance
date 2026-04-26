@@ -49,6 +49,7 @@ _YAML_ALIASES: dict[str, str] = {
     "lr_scheduler": "lr_scheduler",
     "scheduler_step_size": "scheduler_step_size",
     "scheduler_gamma": "scheduler_gamma",
+    "dropout_rate": "dropout_rate",
     "l2_weight": "l2_weight",
     "data_root": "data_root",
     "metrics_csv": "metrics_csv",
@@ -56,6 +57,8 @@ _YAML_ALIASES: dict[str, str] = {
     "target_tau": "target_tau",
     "val_split_pct": "validation_split_pct",
     "validation_split_pct": "validation_split_pct",
+    "early_stopping_patience": "early_stopping_patience",
+    "early_stopping_min_delta": "early_stopping_min_delta",
     # Backward compatibility with older configs:
     "convergence_tau": "target_tau",
 }

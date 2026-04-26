@@ -1,0 +1,18 @@
+{
+  "trial": "trial_002",
+  "proposal_source": "random_init",
+  "candidate": {
+    "l2_weight": 1.0436557728822442e-05
+  },
+  "resolved_overrides": {
+    "order": 1,
+    "do_neural_balance": false,
+    "full_balance_at_start": false,
+    "l2_weight": 1.0436557728822442e-05
+  },
+  "seed_gpu_assignments": {
+    "42": "0",
+    "43": "1",
+    "44": "2"
+  }
+}

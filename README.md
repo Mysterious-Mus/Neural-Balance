@@ -118,7 +118,7 @@ Example authoritative meta config:
 
 Run from repo root:
 
-`python -m src.experiments.mnist_fcn.run_bo_meta_experiment experiments/mnist_fcn_regscomp_meta_bo_l2 --config-path configs/mnist_fcn_regscomp/meta_bo_l2.yaml`
+`python -m src.experiments.mnist_fcn.run_bo_meta_experiment experiments/mnist_fcn_regscomp/l2_reg_BO --config-path configs/mnist_fcn_regscomp/meta_bo_l2.yaml`
 
 Dry-run (only logs resolved meta config into experiment dir):
 

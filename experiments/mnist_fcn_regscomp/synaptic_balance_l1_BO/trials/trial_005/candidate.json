@@ -1,0 +1,19 @@
+{
+  "trial": "trial_005",
+  "proposal_source": "gp_ei",
+  "candidate": {
+    "neural_balance_epoch": 12
+  },
+  "resolved_overrides": {
+    "order": 1,
+    "l2_weight": 0.0,
+    "do_neural_balance": true,
+    "full_balance_at_start": false,
+    "neural_balance_epoch": 12
+  },
+  "seed_gpu_assignments": {
+    "42": "0",
+    "43": "1",
+    "44": "2"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "started_at_unix": 1777091571.518706,
+  "python_executable": "/usr/bin/python",
+  "dry_run": false,
+  "methods": [
+    {
+      "key": "synaptic_balance_l1",
+      "label": "Synaptic balance (L1)",
+      "experiment_dir": "experiments/mnist_fcn_regscomp/synaptic_balance_l1_BO",
+      "config_path": "configs/mnist_fcn_regscomp/meta_bo_synaptic_balance_l1.yaml",
+      "command": [
+        "/usr/bin/python",
+        "-m",
+        "src.experiments.mnist_fcn.run_bo_meta_experiment",
+        "experiments/mnist_fcn_regscomp/synaptic_balance_l1_BO",
+        "--config-path",
+        "configs/mnist_fcn_regscomp/meta_bo_synaptic_balance_l1.yaml"
+      ],
+      "config_tracking": {
+        "static_overrides": {
+          "order": 1,
+          "l2_weight": 0.0,
+          "do_neural_balance": true,
+          "full_balance_at_start": false
+        },
+        "tuned_keys": [
+          "neural_balance_epoch"
+        ],
+        "changed_from_plain": {
+          "order": 1,
+          "do_neural_balance": true
+        },
+        "bo": {
+          "total_candidates": 12,
+          "init_random": 4,
+          "guided": 8,
+          "acquisition_samples": 2048,
+          "seed": 1234,
+          "xi": 0.01
+        },
+        "objective": "mean_final_val_acc_pct",
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "validation_split_pct": 10
+      },
+      "status": "completed",
+      "return_code": 0,
+      "duration_sec": 21560.18
+    },
+    {
+      "key": "synaptic_balance_l2",
+      "label": "Synaptic balance (L2)",
+      "experiment_dir": "experiments/mnist_fcn_regscomp/synaptic_balance_l2_BO",
+      "config_path": "configs/mnist_fcn_regscomp/meta_bo_synaptic_balance_l2.yaml",
+      "command": [
+        "/usr/bin/python",
+        "-m",
+        "src.experiments.mnist_fcn.run_bo_meta_experiment",
+        "experiments/mnist_fcn_regscomp/synaptic_balance_l2_BO",
+        "--config-path",
+        "configs/mnist_fcn_regscomp/meta_bo_synaptic_balance_l2.yaml"
+      ],
+      "config_tracking": {
+        "static_overrides": {
+          "order": 2,
+          "l2_weight": 0.0,
+          "do_neural_balance": true,
+          "full_balance_at_start": false
+        },
+        "tuned_keys": [
+          "neural_balance_epoch"
+        ],
+        "changed_from_plain": {
+          "do_neural_balance": true
+        },
+        "bo": {
+          "total_candidates": 12,
+          "init_random": 4,
+          "guided": 8,
+          "acquisition_samples": 2048,
+          "seed": 1234,
+          "xi": 0.01
+        },
+        "objective": "mean_final_val_acc_pct",
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "validation_split_pct": 10
+      },
+      "status": "completed",
+      "return_code": 0,
+      "duration_sec": 23035.52
+    }
+  ],
+  "finished_at_unix": 1777136167.2461786
+}

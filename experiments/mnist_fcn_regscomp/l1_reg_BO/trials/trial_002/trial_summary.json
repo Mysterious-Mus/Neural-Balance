@@ -1,0 +1,74 @@
+{
+  "trial": "trial_002",
+  "proposal_source": "random_init",
+  "candidate": {
+    "l2_weight": 1.0436557728822442e-05
+  },
+  "resolved_overrides": {
+    "order": 1,
+    "do_neural_balance": false,
+    "full_balance_at_start": false,
+    "l2_weight": 1.0436557728822442e-05
+  },
+  "mean_final_val_acc_pct": 91.47777777777777,
+  "mean_final_test_acc_pct": 91.95666666666666,
+  "sigma_final_test_acc_pct_across_seeds": 0.1101514109457212,
+  "objective_name": "mean_final_val_acc_pct",
+  "objective_value": 91.47777777777777,
+  "per_seed_metrics": [
+    {
+      "target_tau_val_acc_pct": 90.0,
+      "target_tau_test_acc_pct": 90.0,
+      "epochs_at_tau": 67,
+      "final_train_acc_pct": 91.74074074074075,
+      "final_train_loss_batch_mean": 0.3291079049568041,
+      "final_train_loss_eval": 0.2883235398344519,
+      "final_val_acc_pct": 91.51666666666667,
+      "final_val_loss": 0.3036671057343483,
+      "best_val_acc_pct": 91.51666666666667,
+      "final_test_acc_pct": 91.95,
+      "final_test_loss": 0.27814303305931387,
+      "best_test_acc_pct": 91.51666666666667,
+      "generalization_gap_train_minus_test_ppts": -0.20925925925925526,
+      "sigma_final_test_acc_pct_across_seeds": null,
+      "seed": 42,
+      "seed_dir": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/l1_reg_BO/trials/trial_002/seed_42"
+    },
+    {
+      "target_tau_val_acc_pct": 90.0,
+      "target_tau_test_acc_pct": 90.0,
+      "epochs_at_tau": 70,
+      "final_train_acc_pct": 91.59444444444445,
+      "final_train_loss_batch_mean": 0.33152120620436015,
+      "final_train_loss_eval": 0.2907606620359195,
+      "final_val_acc_pct": 91.53333333333333,
+      "final_val_loss": 0.29797228301564854,
+      "best_val_acc_pct": 91.53333333333333,
+      "final_test_acc_pct": 91.85,
+      "final_test_loss": 0.2796342930756509,
+      "best_test_acc_pct": 91.53333333333333,
+      "generalization_gap_train_minus_test_ppts": -0.25555555555554577,
+      "sigma_final_test_acc_pct_across_seeds": null,
+      "seed": 43,
+      "seed_dir": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/l1_reg_BO/trials/trial_002/seed_43"
+    },
+    {
+      "target_tau_val_acc_pct": 90.0,
+      "target_tau_test_acc_pct": 90.0,
+      "epochs_at_tau": 65,
+      "final_train_acc_pct": 91.77037037037037,
+      "final_train_loss_batch_mean": 0.33022117000338025,
+      "final_train_loss_eval": 0.2895371102467532,
+      "final_val_acc_pct": 91.38333333333334,
+      "final_val_loss": 0.28993404656648636,
+      "best_val_acc_pct": 91.4,
+      "final_test_acc_pct": 92.07,
+      "final_test_loss": 0.2771675208583474,
+      "best_test_acc_pct": 91.4,
+      "generalization_gap_train_minus_test_ppts": -0.2996296296296208,
+      "sigma_final_test_acc_pct_across_seeds": null,
+      "seed": 44,
+      "seed_dir": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/l1_reg_BO/trials/trial_002/seed_44"
+    }
+  ]
+}

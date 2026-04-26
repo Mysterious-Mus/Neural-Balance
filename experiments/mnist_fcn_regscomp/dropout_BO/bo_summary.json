@@ -1,0 +1,55 @@
+{
+  "meta_experiment_dir": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/dropout_BO",
+  "meta_config_source_path": "/workspaces/Neural-Balance/configs/experiment_config.yaml",
+  "base_config_source_mode": "base_config_path",
+  "base_config_source_path": "/workspaces/Neural-Balance/configs/experiment_config.yaml",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "runtime": {
+    "parallel_seeds": 3,
+    "gpu_pool": [
+      "0",
+      "1",
+      "2"
+    ],
+    "python_executable": "/usr/bin/python"
+  },
+  "bo": {
+    "total_candidates": 12,
+    "init_random": 4,
+    "guided": 8,
+    "acquisition_samples": 2048,
+    "seed": 1234,
+    "xi": 0.01
+  },
+  "objective": "mean_final_val_acc_pct",
+  "search_space": [
+    {
+      "name": "dropout_rate",
+      "type": "float",
+      "low": 0.0,
+      "high": 0.5,
+      "log_scale": false
+    }
+  ],
+  "static_overrides": {
+    "order": 2,
+    "l2_weight": 0.0,
+    "do_neural_balance": false,
+    "full_balance_at_start": false
+  },
+  "best_trial": {
+    "trial": "trial_003",
+    "proposal_source": "random_init",
+    "objective_name": "mean_final_val_acc_pct",
+    "objective_value": 92.14999999999999,
+    "mean_final_val_acc_pct": 92.14999999999999,
+    "mean_final_test_acc_pct": 92.47666666666667,
+    "sigma_final_test_acc_pct_across_seeds": 0.08736894948054237,
+    "dropout_rate": 0.4554879812245621
+  },
+  "all_trials_csv": "/workspaces/Neural-Balance/experiments/mnist_fcn_regscomp/dropout_BO/bo_trials.csv"
+}

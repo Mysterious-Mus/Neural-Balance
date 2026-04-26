@@ -1,0 +1,4 @@
+# Wrapper config. Source-of-truth values live in configs/experiment_config.yaml.
+# This file is intentionally thin and only selects a profile.
+_consume: configs/experiment_config.yaml
+_select: experiments.mnist_fcn_regscomp.meta_bo_dropout
