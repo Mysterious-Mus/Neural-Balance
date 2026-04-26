@@ -60,3 +60,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Experiment artifacts
+experiments/mnist_fcn_regscomp/early_stopping_BO_smoke_fix/
+**/run.log
