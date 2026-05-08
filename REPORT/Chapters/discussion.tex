@@ -4,16 +4,11 @@
 \label{sec:discussion}
 
 \subsection{When regularization helps}
-Interpret results in terms of overfitting indicators (train--test gap), optimization stability, and sensitivity to hyperparameters.
+In this controlled MNIST setting, classical regularizers provide little benefit over unregularized training. $L_1$ penalty, $L_2$ weight decay, and early stopping all converge to approximately $91.96\%$ test accuracy---below the plain baseline at $\RegMnistPlainFinalTestAccPct\%$. Their train--test gaps are mildly negative ($-0.25$ to $-0.26$ ppts), indicating mild underfitting with the BO-selected hyperparameters rather than overfitting. Dropout is the best classical method, matching the plain baseline at $\RegMnistDropoutFinalTestAccPct\%$ while maintaining a negative gap ($\RegMnistDropoutGapPpts$ ppts). On a simple task with ample data and a small model, classical regularizers impose constraints that do not translate to generalization gains.
 
 \subsection{How neural balancing compares}
-Discuss neural balancing relative to classical regularization:
-\begin{itemize}
-  \item Does balancing primarily improve \emph{optimization} (faster convergence) or \emph{generalization} (better test performance), or both?
-  \item Does $L_1$ vs.\ $L_2$ balancing behave differently?
-  \item Are gains stronger in data-scarce settings?
-\end{itemize}
+Synaptic balance provides improvements in both optimization speed and generalization, with the magnitude depending strongly on the cost function. With $L_1$ cost, convergence to $\TargetTauPct\%$ accuracy takes $\RegMnistSynBalLOneEpochsAtTau$ epochs---approximately $9\times$ faster than classical methods---and final test accuracy reaches $\RegMnistSynBalLOneFinalTestAccPct\%$, $\RegMnistSynBalLOneGainOverBestNonBalancePpts$ ppts above the best non-balance baseline. The positive train--test gap ($+\RegMnistSynBalLOneGapPpts$ ppts) confirms the gain comes from genuine generalization rather than underfitting. With $L_2$ cost, the benefit is more modest: convergence in $\RegMnistSynBalLTwoEpochsAtTau$ epochs and a $\RegMnistSynBalLTwoGainOverBestNonBalancePpts$ ppt improvement over the best non-balance baseline. The strong asymmetry between $L_1$ and $L_2$ balancing suggests that the choice of cost function is a critical design decision, with $L_1$ inducing a more aggressive restructuring of weight scales that is particularly effective in this setting.
 
 \subsection{Limitations}
-Record limitations that affect conclusions (e.g., limited compute budget, restricted model families, or incomplete hyperparameter tuning). Also clarify the scope where balancing is applicable (e.g., activation-function assumptions).
+Results are limited to a single dataset (MNIST) and a small fully connected architecture (one hidden layer of 256 units with ReLU). It is unclear how the findings generalize to convolutional or transformer architectures, larger models, or more challenging datasets. The plain baseline uses only a single seed (\RegMnistPlainSeedCount{} run), making its estimate noisier than the three-seed estimates for other methods. Furthermore, the balancing schedule is treated as a categorical variable with predefined modes; a more systematic sweep over interleaving frequencies and partial balancing strategies is left for future work. Neural balancing also relies on activation homogeneity (e.g., ReLU) for the function-preservation guarantee, so its applicability to architectures with non-homogeneous activations requires additional care.
 

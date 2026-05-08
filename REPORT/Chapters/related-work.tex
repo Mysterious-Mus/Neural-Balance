@@ -3,11 +3,5 @@
 \section{Related Work}
 \label{sec:related-work}
 
-This section situates the compared regularization approaches within the broader literature. At minimum, it should cover:
-\begin{itemize}
-  \item classical regularization (weight decay, dropout),
-  \item implicit regularization effects of optimization,
-  \item re-parameterization and scale-invariance phenomena in deep nets,
-  \item synaptic neural balance and closely related balancing or rescaling methods \citep{alexos2025synapticbalance}.
-\end{itemize}
+This section situates the compared approaches within the broader literature on regularization and weight re-scaling in neural networks. Classical regularizers such as $L_2$ weight decay \citep{krogh1992simple} and dropout \citep{srivastava2014dropout} are well-established baselines; their interactions with optimization and generalization have been studied extensively. Re-parameterization and scale-invariance phenomena in deep networks---where rescaling weights of successive layers leaves the function unchanged under homogeneous activations---underlie the theoretical basis for synaptic neural balance. This perspective connects balancing to weight normalization and path-norm regularization methods. Synaptic neural balance as studied here follows \citet{alexos2025synapticbalance}.
 

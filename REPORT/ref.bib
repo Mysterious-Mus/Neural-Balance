@@ -1,3 +1,29 @@
+@incollection{krogh1992simple,
+  title={A simple weight decay can improve generalization},
+  author={Krogh, Anders and Hertz, John A},
+  booktitle={Advances in Neural Information Processing Systems 4},
+  pages={950--957},
+  year={1992},
+  publisher={Morgan-Kaufmann}
+}
+
+@article{srivastava2014dropout,
+author = {Srivastava, Nitish and Hinton, Geoffrey and Krizhevsky, Alex and Sutskever, Ilya and Salakhutdinov, Ruslan},
+title = {Dropout: a simple way to prevent neural networks from overfitting},
+year = {2014},
+issue_date = {January 2014},
+publisher = {JMLR.org},
+volume = {15},
+number = {1},
+issn = {1532-4435},
+abstract = {Deep neural nets with a large number of parameters are very powerful machine learning systems. However, overfitting is a serious problem in such networks. Large networks are also slow to use, making it difficult to deal with overfitting by combining the predictions of many different large neural nets at test time. Dropout is a technique for addressing this problem. The key idea is to randomly drop units (along with their connections) from the neural network during training. This prevents units from co-adapting too much. During training, dropout samples from an exponential number of different "thinned" networks. At test time, it is easy to approximate the effect of averaging the predictions of all these thinned networks by simply using a single unthinned network that has smaller weights. This significantly reduces overfitting and gives major improvements over other regularization methods. We show that dropout improves the performance of neural networks on supervised learning tasks in vision, speech recognition, document classification and computational biology, obtaining state-of-the-art results on many benchmark data sets.},
+journal = {J. Mach. Learn. Res.},
+month = jan,
+pages = {1929–1958},
+numpages = {30},
+keywords = {regularization, neural networks, model combination, deep learning}
+}
+
 @article{alexos2025synapticbalance, title={Improving Deep Learning Speed and Performance Through Synaptic Neural Balance}, volume={39}, url={https://ojs.aaai.org/index.php/AAAI/article/view/33683}, DOI={10.1609/aaai.v39i15.33683}, abstractNote={We present theory of synaptic neural balance and we show experimentally that synaptic neural balance can improve deep learning speed, and accuracy, even in data-scarce environments. Given an additive cost function (regularizer) of the synaptic weights, a neuron is said to be in balance if the total cost of its incoming weights is equal to the total cost of its outgoing weights. For large classes of networks, activation functions, and regularizers, neurons can be balanced fully or partially using scaling operations that do not change their functionality. Furthermore, these balancing operations are associated with a strictly convex optimization problem with a single optimum and can be carried out in any order. In our simulations, we systematically observe that: (1) Fully balancing before training results in better performance as compared to several other training approaches; (2) Interleaving partial (layer-wise) balancing and stochastic gradient descent steps during training results in faster learning convergence and better overall accuracy (with L1 balancing converging faster than L2 balancing); and (3) When given limited training data, neural balanced models outperform plain or regularized models; and this is observed in both feedforward and recurrent networks. In short, the evidence supports that neural balancing operations could be added to the arsenal of methods used to regularize and train neural networks. Furthermore, balancing operations are entirely local and can be carried out asynchronously, making them plausible for biological or neuromorphic systems.}, number={15}, journal={Proceedings of the AAAI Conference on Artificial Intelligence}, author={Alexos, Antonios and Domingo, Ian and Baldi, Pierre}, year={2025}, month={Apr.}, pages={15339-15346} }
 
 @misc{autodefense,

@@ -4,18 +4,6 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-\subsection{Experimental setup}
-This section should describe the datasets, models, optimizers, training budgets, and hyperparameter search spaces used for each method. When reporting results, include enough detail to reproduce the runs (e.g., seed list, learning rate, batch size, and regularization coefficients).
-
-\subsection{Main results}
-Report the main comparison table(s) here, typically including:
-\begin{itemize}
-  \item baseline (no explicit regularization),
-  \item classical regularizers (weight decay, dropout, etc.),
-  \item neural balancing (before training and/or interleaved),
-  \item combinations (e.g., weight decay + balancing).
-\end{itemize}
-
 \subsection{Regularization comparison on MNIST with a fully connected network}
 \label{subsec:reg-mnist-fcn}
 Table~\ref{tab:regularization-mnist-fcn} compares regularization methods after selecting each method's own hyperparameters on a \emph{validation} split using a unified protocol. Everything below is shared across methods except the meaning of each method's grid point (the knob being swept).
@@ -52,15 +40,4 @@ Among the BO-selected methods, synaptic balance ($L_1$) is the clear standout in
 
 The conventional regularizers cluster much more tightly: $L_1$ penalty, $L_2$ weight decay, and early stopping all finish around 91.96\% test accuracy, while dropout is the best non-balance baseline at \RegMnistDropoutFinalTestAccPct\%. Their train--test gaps are slightly negative, suggesting mild underfitting in this setting, whereas synaptic balance ($L_1$) keeps the best held-out performance despite a positive gap of \RegMnistSynBalLOneGapPpts percentage points. The plain baseline currently has only \RegMnistPlainSeedCount completed seed, so its $\sigma_{\mathrm{test}}$ entry is intentionally left blank.
 
-\subsection{Data-scarce regime}
-Because regularization effects are often most visible when data is limited, include a controlled ablation where the training set is reduced (e.g., 1\%, 5\%, 10\% of the full training data) while keeping the test set unchanged.
-
-\subsection{Ablations}
-Suggested ablations:
-\begin{itemize}
-  \item balancing cost choice: $L_1$ vs.\ $L_2$,
-  \item balancing schedule: before training vs.\ every $k$ epochs,
-  \item model size: small vs.\ medium vs.\ large,
-  \item interaction with weight decay and dropout.
-\end{itemize}
 
